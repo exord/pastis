@@ -4,7 +4,6 @@
 05-04-2012: free extinction included in the star call
 
 '''
-import string
 from .photometry import Allpbands
 from .AstroClasses import *
 
@@ -16,7 +15,7 @@ def make_triple_component(objname, configdict, imposeobj=None):
     ## Test if Object is a binary
     for binary in TypeList['binary']:
         occurrence = occurrence + objname.count(binary)
-        
+
     if occurrence == 1:
         #print('Found component of triple: %s, of type binary'%objname)
         component = make_binary(objname, inputdict[objname], imposeobj)
@@ -38,7 +37,7 @@ def make_triple_component(objname, configdict, imposeobj=None):
             if occurrence == 1:
                 #print('Found component of triple: %s, of type star'%objname)
                 ddstar = {}
-                for key in inputdict[objname].keys():  
+                for key in inputdict[objname].keys():
                     ddstar[key] = inputdict[objname][key][0]
 
                 component = make_star(objname, ddstar, imposeobj)
@@ -55,7 +54,7 @@ def make_triple_component(objname, configdict, imposeobj=None):
     """
     return component
 
-                        
+
 
 def make_binary(objname, dd, imposeobj = None):
 
@@ -67,16 +66,16 @@ def make_binary(objname, dd, imposeobj = None):
             ddop[key] = dd[key][0]
         #dd['orbital_parameters'] = orbital_parameters(**ddop)
         orbit = orbital_parameters(**ddop)
-    
+
     if 'FitBinary' in objname or 'FitPlanet' in objname:
         ddbin = {}
-        for key in inputdict[objname].keys():  
+        for key in inputdict[objname].keys():
             ddbin[key] = inputdict[objname][key][0]
         ddbin['orbital_parameters'] = orbit
 
         if 'FitBinary' in objname:
             binary = FitBinary(**ddbin)
-    
+
         elif 'FitPlanet' in objname:
             binary = FitPlanet(**ddbin)
 
@@ -85,7 +84,7 @@ def make_binary(objname, dd, imposeobj = None):
         dd1 = {}
 
         starname = inputdict[objname]['star1'] ## CHECK NAME OF STAR IN QBIN
-        for key in inputdict[starname].keys():  
+        for key in inputdict[starname].keys():
             dd1[key] = inputdict[starname][key][0]
 
         ## If impositions are to be made (e.g. if binary belongs to a triple system)
@@ -95,7 +94,7 @@ def make_binary(objname, dd, imposeobj = None):
             dd1['v0'] = imposeobj.v0
             dd1['dist'] = imposeobj.dist
             dd1['ebmv'] = imposeobj.ebmv
-            
+
         star1 = make_star(starname, dd1)
 
         try:
@@ -103,7 +102,7 @@ def make_binary(objname, dd, imposeobj = None):
             inputdict.pop(starname)
         except NameError:
             pass
-        
+
         if 'qBinary' in objname:
             ddbin = {}
             for key in inputdict[objname].keys():
@@ -118,7 +117,7 @@ def make_binary(objname, dd, imposeobj = None):
             secondaryname = inputdict[objname]['star2']
 
             dd2 = {}
-            for key in inputdict[secondaryname].keys():  
+            for key in inputdict[secondaryname].keys():
                 dd2[key] = inputdict[secondaryname][key][0]
 
             dd2['logage'] = star1.logage
@@ -144,11 +143,11 @@ def make_plansys(objname, dd, imposeobj = None):
 
     ## Make central star
     dd1 = {}
-    
+
     starname = inputdict[objname]['star1'] ## CHECK NAME OF STAR IN QBIN
-    for key in inputdict[starname].keys():  
+    for key in inputdict[starname].keys():
         dd1[key] = inputdict[starname][key][0]
-        
+
     ## If impositions are to be made (e.g. if plansys belongs to a triple system)
     if imposeobj != None:
         dd1['logage'] = imposeobj.logage
@@ -165,7 +164,7 @@ def make_plansys(objname, dd, imposeobj = None):
     except NameError:
         pass
 
-    
+
     ## Construct planet objects
     planets = []
     for planet in dd.keys():
@@ -178,10 +177,10 @@ def make_plansys(objname, dd, imposeobj = None):
 
         if not 'orbital_parameters' in ddp.keys():
             ddp['orbital_parameters'] = orbital_parameters(**ddp)
-            
-        ### BE CAREFUL; orbital_parameters DOES NOT REMOVE ELEMENTS FROM 
+
+        ### BE CAREFUL; orbital_parameters DOES NOT REMOVE ELEMENTS FROM
         ### DICTIONARY. AS A CONSECUENCE, PLANET EXPLODES.
-        
+
         ## Construct Classical Planets
         if 'FitPlanet' in dd[planet]:
             planets.append(FitPlanet(**ddp))
@@ -194,7 +193,7 @@ def make_plansys(objname, dd, imposeobj = None):
     plansys = PlanSys(star, *planets)
 
     return plansys
-    
+
 
 def make_star(objname, dd, imposeobj = None):
 
@@ -232,7 +231,7 @@ def ObjectBuilder(dictionary) :
 
     global inputdict
     inputdict = dictionary.copy()
-    
+
     ###
     ### Get names of all objects to be constructed.
     ###
@@ -240,19 +239,18 @@ def ObjectBuilder(dictionary) :
 
     ## Build all objects
     while len(inputdict.keys()) > 0:
+        print('Me trabe')
 
         ## Start construction of Triples
-        indTriple = n.array(map(string.find, inputdict.keys(),
-                                ['Triple']*len(inputdict.keys())
-                                ))
+        indTriple = n.array([a.find('Triple') for a in inputdict])
 
-        triples = n.array(inputdict.keys())[indTriple != -1]
-        
+        triples = n.array(list(inputdict.keys()))[indTriple != -1]
+
         for obj in triples:
-            
+
             ## Get config dict of triple
             dd = dictionary[obj]
-            
+
             ## Construct first object of triple
             obj1 = make_triple_component(dd['object1'],
                                          dictionary[dd['object1']])
@@ -267,7 +265,7 @@ def ObjectBuilder(dictionary) :
 
             ## Remove component from list to construct.
             inputdict.pop(dd['object2'])
-            
+
             ## Make orbital parameters
             if not 'orbital_parameters' in dd.keys():
                 ddop = {}
@@ -277,7 +275,7 @@ def ObjectBuilder(dictionary) :
 
             ## Build Triple
             objects[obj] = Triple(dd['orbital_parameters'], obj1, obj2)
-            
+
 
             ## Remove Triple object from list to construct.
             inputdict.pop(obj)
@@ -287,12 +285,10 @@ def ObjectBuilder(dictionary) :
         ###
         plansystems = []
         for plansys in TypeList['plansys']:
-            indPlanSys = n.array(map(string.find, inputdict.keys(),
-                                     [plansys]*len(inputdict.keys())
-                                     )
-                                 )
+            indPlanSys = n.array([a.find(plansys) for a in inputdict])
 
-            plansystems.extend(n.array(inputdict.keys())[indPlanSys != -1])
+            plansystems.extend(n.array(list(inputdict.keys())
+                              )[indPlanSys != -1])
 
         for obj in plansystems:
 
@@ -307,18 +303,16 @@ def ObjectBuilder(dictionary) :
         ###
         binaries = []
         for binary in TypeList['binary']:
-            indBinary = n.array(map(string.find, inputdict.keys(),
-                                    [binary]*len(inputdict.keys())
-                                    )
-                                )
+            indBinary = n.array([a.find(binary) for a in inputdict])
 
-            binaries.extend(n.array(inputdict.keys())[indBinary != -1])
+            binaries.extend(n.array(list(inputdict.keys())
+                                    )[indBinary != -1])
 
         for obj in binaries:
 
             ## Construct
             objects[obj] = make_binary(obj, inputdict[obj])
-            
+
             ## Remove created binaries from list
             inputdict.pop(obj)
 
@@ -326,20 +320,18 @@ def ObjectBuilder(dictionary) :
         ## Start construction of stars
         ###
         stars = []
-        
-        for star in TypeList['star']:
-            indStars = n.array(map(string.find, inputdict.keys(),
-                                   [star]*len(inputdict.keys())
-                                   )
-                               )
 
-            stars.extend(n.array(inputdict.keys())[indStars != -1])
+        for star in TypeList['star']:
             
+            indStars = n.array([a.find(star) for a in inputdict])
+
+            stars.extend(n.array(list(inputdict.keys()))[indStars != -1])
+
         for obj in stars:
             dds = {}
             for key in inputdict[obj].keys():
                 dds[key] = inputdict[obj][key][0]
-            
+
             objects[obj] = make_star(obj, dds)
 
             ## Remove created stars from list
@@ -348,10 +340,9 @@ def ObjectBuilder(dictionary) :
         ####
         # Construct Drifts
         ####
-        ind_drifts = n.array(map(string.find, inputdict.keys(),
-                                 ['Drift']*len(inputdict.keys())))
-
-        drifts = n.array(inputdict.keys())[ind_drifts != -1]
+        ind_drifts = n.array([a.find('Drift') for a in inputdict])
+        
+        drifts = n.array(list(inputdict.keys()))[ind_drifts != -1]
 
         for obj in drifts:
 
@@ -365,14 +356,11 @@ def ObjectBuilder(dictionary) :
         # Remove data-related objects
         ####
         pbands = []
-        
-        for pband in Allpbands:
-            indPbands = n.array(map(string.find, inputdict.keys(),
-                                    [pband]*len(inputdict.keys())
-                                    )
-                                )
 
-            pbands.extend(n.array(inputdict.keys())[indPbands != -1])
+        for pband in Allpbands:
+            indPbands = n.array([a.find(pband) for a in inputdict])
+
+            pbands.extend(n.array(list(inputdict.keys()))[indPbands != -1])
 
         for pband in pbands:
             ## Remove photometric objects from list
@@ -388,7 +376,7 @@ def ObjectBuilder(dictionary) :
             allobjs.extend(TypeList[objtype])
 
         for obj in allobjs:
-            ind = n.array(map(string.find, inputdict.keys(),
+            ind = n.array(map(str.find, inputdict.keys(),
                               [obj]*len(inputdict.keys())
                               )
                           )

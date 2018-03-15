@@ -6,8 +6,9 @@ import numpy as n
 from scipy import optimize
 
 # Intra-package imports
+from ..paths import libpath
 from . import RVgaussianFitError
-import AstroClasses as ac
+from .. import AstroClasses as ac
 from ..velocimetry import *
 from . import Pyarome
 

@@ -1,9 +1,10 @@
-import sys, os
+import sys
 import numpy as n
 from scipy import interpolate
 
-from . import LDdict
+from .extlib import LDdict
 from . import photometry as phot
+
 
 def initialize_limbdarkening(pbands,
                              ATMmodel = 'A',
@@ -62,25 +63,31 @@ def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
     b = n.zeros((nrecord,), float)
 
     # Initialize string arrays
-    band = n.zeros((nrecord,), 'S8')
-    method = n.zeros((nrecord,), 'S1')
-    model = n.zeros((nrecord,), 'S1')
+    band = n.zeros((nrecord,), 'U8')
+    method = n.zeros((nrecord,), 'U1')
+    model = n.zeros((nrecord,), 'U1')
 
     ## Read variables
     for i, line in enumerate(lines[32:-2]):
         try:
             ll = line.split()
-            logg[i], Teff[i], z[i], microturb[i], a[i], b[i] = \
-                     ll[0], ll[1], ll[2], ll[3], ll[4], ll[5]
-            band[i], method[i], model[i] = ll[6], ll[7], ll[8]
+            logg[i], Teff[i], z[i], microturb[i], a[i], b[i] = list(
+                    map(float, ll[:6]))
+            band[i], method[i], model[i] = list(map(str, ll[6:]))
 
         except:
             print(ll)
 
     ## Prepare conditions to select a given photometric band
-    cond0 = n.logical_and(n.equal(microturb, 2.0), model == ATMmodel)
-    cond1 = n.logical_and(cond0, method == 'L')
-
+    condMT = n.equal(microturb, 2.0)
+    assert sum(condMT) > 0, "No entries for microturbulence = 2.0"
+    condMOD = model == ATMmodel
+    assert sum(condMOD) > 0, "No entries for model {}".format(ATMmodel)
+    condMET = (method == 'L')
+    assert sum(condMET) > 0, "No entries for method = 'L' and microturbulence = 2.0"
+    cond1 = condMT * condMOD * condMET
+    assert sum(cond1) > 0
+    
     LDCs = {}
     for ii, photband in enumerate(n.sort(photbands)):
         if ii == 0:

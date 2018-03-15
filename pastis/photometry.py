@@ -9,13 +9,11 @@ elif sys.version.startswith('3'):
 #import pyfits
 
 # Intra-package import
-from . import c
-from . import SpectrumInterpolError
+from .paths import libpath, zeromagfile, filterpath
+from .constants import c
+from .exceptions import SpectrumInterpolError
 from .tools import loadtxt_iter
 from . import tools
-
-
-from . import libpath, zeromagfile, filterpath
 
 Allpbands = ['CoRoT-W', 'Kepler', 'IRAC-I1', 'IRAC-I2', 'IRAC-I3', 'IRAC-I4',
              'SDSS-U', 'SDSS-G', 'SDSS-R', 'SDSS-I', 'SDSS-Z', 'Johnson-U',

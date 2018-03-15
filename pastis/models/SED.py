@@ -1,6 +1,6 @@
 from ..AstroClasses import *
 from .. import photometry as phot
-from .. import GlobalSpectrumError
+from ..exceptions import GlobalSpectrumError
 
 
 def PASTIS_SED(photbands, *args):

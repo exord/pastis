@@ -7,8 +7,8 @@ from math import log10
 from scipy import interpolate
 
 # Intra-package imports
-from . import EvolTrackError, OutofIsochroneError
-from . import Msun, Rsun, G
+from .exceptions import EvolTrackError, OutofIsochroneError
+from .constants import Msun, Rsun, G
 from .tools import loadtxt_iter
 
 

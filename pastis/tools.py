@@ -2,8 +2,8 @@ import numpy as n
 from scipy.interpolate import *
 from scipy import optimize, stats
 from math import *
-from . import Msun, Rsun, G 
-#import fit
+
+from .constants import Msun, Rsun, G 
 
 # Define useful functions employed by all packages
 def area(x, y):

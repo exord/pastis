@@ -26,7 +26,7 @@ def oversample_time_notexp(v, oversampling_factor, dt=None):
     
     """
     v = n.array(v, float)
-    if len(v) == 1.:
+    if len(v) == 1:
         return v
     if dt is None:
         dt = v[1] - v[0]
@@ -47,7 +47,7 @@ def oversample_time_notexp(v, oversampling_factor, dt=None):
         oversampling_factor = n.zeros(len(v), float) + oversampling_factor
 
     t = n.array([])
-    for jj in xrange(len(v)):
+    for jj in range(len(v)):
         if dt is None:
             dt = v[jj+1] - v[jj]
         ti = n.arange(v[jj] - dt * (oversampling_factor[jj] - 1) /
@@ -129,7 +129,7 @@ def oversample_time(t, texp=None, dt=None, oversampling_factor=None):
 
     tt = []
     if dt is not None:
-        for i in xrange(len(t)):
+        for i in range(len(t)):
             n_sample = int(round(texp[i] / dt))
             if n_sample < 1:
                 raise ValueError('Oversampling timescale (dt) should be '

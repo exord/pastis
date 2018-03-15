@@ -34,6 +34,7 @@ from ..models.SED import PASTIS_SED
 from ..models.RV import PASTIS_RV
 from .. import checkblendmag
 #
+from ..exceptions import EvolTrackError, OutofIsochroneError, EBOPparamError
 
 
 def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
