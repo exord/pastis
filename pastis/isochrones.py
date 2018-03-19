@@ -189,7 +189,7 @@ def prepare_tracks_target(input_file, AgeUniverse = 10.4):
 
 
     global verticesT
-    verticesT = n.array(T.keys())
+    verticesT = n.array(list(T.keys()))
 
     print('... DONE! \n')
     return
@@ -366,7 +366,7 @@ def get_stellarparams_target(z, y, logT, N = 4, Nt = 10, planethost = False):
     Tmax = []
 
     # Get number of parameters to interpolate
-    nparams = len(T[T.keys()[0]][3:])
+    nparams = len(T[list(T.keys())[0]][3:])
 
     # Start interpolation in metallicity; miniu is a global variable.
     for mm in miniu:

@@ -4,6 +4,7 @@
 05-04-2012: free extinction included in the star call
 
 '''
+from . import TypeList
 from .photometry import Allpbands
 from .AstroClasses import *
 
@@ -376,12 +377,9 @@ def ObjectBuilder(dictionary) :
             allobjs.extend(TypeList[objtype])
 
         for obj in allobjs:
-            ind = n.array(map(str.find, inputdict.keys(),
-                              [obj]*len(inputdict.keys())
-                              )
-                          )
+            ind = n.array([a.find(obj) for a in inputdict])
 
-        for remain in n.array(inputdict.keys())[ind == -1]:
+        for remain in n.array(list(inputdict.keys()))[ind == -1]:
             inputdict.pop(remain)
 
     return objects.values()

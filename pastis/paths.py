@@ -27,9 +27,11 @@ resultpath = os.path.join(PASTISroot, 'resultfiles')
 runpath = os.path.join(PASTISroot, 'run')
 
 # Add directory to pythonpath to read modules from fortran
-sys.path.append(os.path.join(os.getenv('PASTISLIB'), 'fortran'))
+fortranpath = os.path.join(os.getenv('PASTISLIB'), 'fortran')
+if not fortranpath in sys.path:
+    sys.path.append(fortranpath)
 
-# Define PATHS
+# Define PATHS and FILES
 filterpath = os.path.join(libpath, 'Filters/')
 zeromagfile = os.path.join(filterpath, 'ZeroFlux.dat')
 setpath = os.path.join(libpath, 'SET')

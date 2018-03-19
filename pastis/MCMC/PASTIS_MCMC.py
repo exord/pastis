@@ -8,12 +8,14 @@
 # v1.0 2012-03-18: Classes Parameter, Prior and Chain are now defined
 # in module objMCMC, in order to be able to pickle them.
 
+from math import pi, log10, log, exp
 import random
 import time
 import pickle
 from scipy import stats
 import scipy
 from scipy.stats.distributions import rv_frozen
+import numpy as n
 
 # Intra-package imports
 from .tools import state_constructor, state_deconstructor, get_jitter
@@ -192,7 +194,7 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
     ti = time.time()
 
     N = int(N)
-    for i in xrange(1, N):
+    for i in range(1, N):
 
         # Every 500 steps, print
         if (i+1) % 500 == 0.0:
@@ -1053,8 +1055,8 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
     ##
             
     # Combine likelihoods
-    L = n.array(likeout.values())[:, 0]
-    logL = n.array(likeout.values())[:, 1]
+    L = n.array(list(likeout.values()))[:, 0]
+    logL = n.array(list(likeout.values()))[:, 1]
 
     Lcomb = n.prod(L)
     logLcomb = n.sum(logL)

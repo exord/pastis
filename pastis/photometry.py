@@ -9,7 +9,7 @@ elif sys.version.startswith('3'):
 #import pyfits
 
 # Intra-package import
-from .paths import libpath, zeromagfile, filterpath
+from .paths import libpath, filterpath, zeromagfile
 from .constants import c
 from .exceptions import SpectrumInterpolError
 from .tools import loadtxt_iter
@@ -152,10 +152,10 @@ def read_BTsettl_spectra():
     Flux units are in erg/s/cm^2/A.
     """
     # Read spectra from file
-    f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'BTspec_20.pickle'))
+    f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'BTspec_20.pickle'), 'rb')
 
     global ww, AMz, AMteff, AMlogg
-    ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f)
+    ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f, encoding='bytes')
     f.close()
 
     ## Create dictionary with information about the model
@@ -232,7 +232,7 @@ def read_wwHR():
     Read wavelenght of the high resolution BT-Settl atmosphere model 
     if wwHR is already defined, skip
     """
-    if not globals().has_key('wwHR'):
+    if not 'wwHR' in globals():
         f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'Flux_envolvente',
 			      'lambda.pickle')
 		 )
@@ -285,11 +285,11 @@ def get_interpolated_AM(z, teff, logg, HR = False):
     indlogg = n.searchsorted(AMlogg, logg)
     
     if indz == 0 or indz == infoAM['lenAMz']:
-        raise SpectrummInterpolError('Metallicity (z = %.2f) outside grid.'%z,
+        raise SpectrumInterpolError('Metallicity (z = %.2f) outside grid.'%z,
                                      indz, indteff, indlogg, outside = True
                                      )
     if indteff == 0 or indteff == infoAM['lenAMteff']:
-        raise SpectrummInterpolError('Effective temperature (teff = %d) outside grid.'%teff,
+        raise SpectrumInterpolError('Effective temperature (teff = %d) outside grid.'%teff,
                                      indz, indteff, indlogg, outside = True
                                      )
     if indlogg == 0 or indlogg == infoAM['lenAMlogg']:

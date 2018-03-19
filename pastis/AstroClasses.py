@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
-from math import *
+from math import pi, log10
+import numpy as n
 
 # Intra-package imports
-from . import *
+# from . import *
+from . import TrefRV, Nmax, beaming, spotmodel
+from .photometry import ww
+from .constants import G, c, Msun, Rsun, pc2Rsun, Mjup2Msun, Rjup2Rsun, Mjup
+from .exceptions import SpectrumInterpolError
 from .models.PHOT import run_EBOP
 from .models.PHOT import macula
 from . import tools
@@ -576,7 +581,7 @@ class Triple(object):
 
         if isphase:
             # Convert transit phase to periastron phase
-            Mc = self.orbital_parameters.get_E0() - ecc * sin(
+            Mc = self.orbital_parameters.get_E0() - ecc * n.sin(
                 self.orbital_parameters.get_E0())
             M = 2. * pi * t - Mc
         else:
@@ -797,7 +802,7 @@ class PlanSys(object):
                 ecc = planet.orbital_parameters.ecc
                 nu0 = pi / 2.0 - planet.orbital_parameters.omega
                 bprime = planet.orbital_parameters.b / (1 - ecc ** 2) * (
-                1 + ecc * cos(nu0) )
+                1 + ecc * n.cos(nu0) )
                 planet.orbital_parameters.bprime = bprime
                 cosi = bprime / planet.ar
                 incl = n.arccos(cosi)
@@ -852,10 +857,11 @@ class PlanSys(object):
         return phase_p
 
     def get_true_lat(self, t, orbital_parameters, isphase=False):
-        P = orbital_parameters.P
+        # P = orbital_parameters.P
+        # Tp = orbital_parameters.Tp
         ecc = orbital_parameters.ecc
         omega = orbital_parameters.omega
-        Tp = orbital_parameters.Tp
+        
         if isphase:
             # Convert transit phase to periastron phase
             Mc = orbital_parameters.get_E0() - ecc * n.sin(
@@ -883,7 +889,7 @@ class PlanSys(object):
 
             if isphase:
                 # Convert transit phase to periastron phase
-                Mc = orbit.get_E0() - orbit.ecc * sin(orbit.get_E0())
+                Mc = orbit.get_E0() - orbit.ecc * n.sin(orbit.get_E0())
                 M = 2 * pi * t - Mc
             else:
                 M = self.get_phase_periastron(t, orbit)
@@ -1094,7 +1100,7 @@ class FitBinary(object):
             ecc = self.orbital_parameters.ecc
             nu0 = pi / 2.0 - self.orbital_parameters.omega
             bprime = self.orbital_parameters.b / (1 - ecc ** 2) * (
-                1 + ecc * cos(nu0) )
+                1 + ecc * n.cos(nu0) )
             self.orbital_parameters.bprime = bprime
             cosi = bprime / self.ar
             incl = n.arccos(cosi)
@@ -1204,10 +1210,11 @@ class FitBinary(object):
         return 2. * n.pi * phase_p
 
     def get_true_lat(self, t, isphase=False):
-        P = self.orbital_parameters.P
+        # P = self.orbital_parameters.P
+        # Tp = orbital_parameters.Tp
         ecc = self.orbital_parameters.ecc
         omega = self.orbital_parameters.omega
-        Tp = self.orbital_parameters.Tp
+        
         if isphase:
             # Convert transit phase to periastron phase
             Mc = self.orbital_parameters.get_E0() - ecc * n.sin(
@@ -1490,7 +1497,7 @@ class FitBinary(object):
         incl = self.orbital_parameters.incl
         ecc = self.orbital_parameters.ecc
         omega = self.orbital_parameters.omega  # in radians
-        Ps = self.orbital_parameters.P * 86400  # in seconds
+        # Ps = self.orbital_parameters.P * 86400  # in seconds
 
         # Get fractional fluxes
         kll = sbr * self.kr ** 2 * (1 - ldc2[0] / 3.0 - ldc2[1] / 6.0) / (

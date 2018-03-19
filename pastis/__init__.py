@@ -1,6 +1,8 @@
 import os
 import numpy as n
 
+from .paths import libpath, filterpath, zeromagfile
+from .extlib import EMdict
 from . import photometry
 from . import limbdarkening
 from . import extinction

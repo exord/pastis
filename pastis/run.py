@@ -1,7 +1,6 @@
 import os
 import pickle
-from . import runpath, resultpath
-
+from .paths import runpath, resultpath
 
 def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
             fullsave=False):
