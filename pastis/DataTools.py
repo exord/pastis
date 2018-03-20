@@ -140,7 +140,7 @@ def oversample_time(t, texp=None, dt=None, oversampling_factor=None):
                 tt.append(n.linspace(t[i] - texp[i] / 2. / 86400.,
                                      t[i] + texp[i] / 2. / 86400., n_sample))
     elif oversampling_factor is not None:
-        for i in xrange(len(t)):
+        for i in range(len(t)):
             if oversampling_factor[i] < 1:
                 raise ValueError('Oversampling factor should be at least 1.')
             elif oversampling_factor[i] == 1:

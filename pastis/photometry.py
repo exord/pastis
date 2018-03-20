@@ -1,12 +1,12 @@
 import sys, os
 import numpy as n
 from scipy import interpolate
-
-if sys.version.startswith('2'):
+# import pyfits
+if sys.version_info < (3, 0):
     import cPickle as pickle
-elif sys.version.startswith('3'):
+else:
     import pickle
-#import pyfits
+
 
 # Intra-package import
 from .paths import libpath, filterpath, zeromagfile

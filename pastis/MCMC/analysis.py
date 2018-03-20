@@ -490,7 +490,7 @@ def compute_derived_params(vd, pastisfile, sampling=1, **kwargs):
     # Target and/or Host stars are present
     if any(n.array(indhost) != -1) or any(n.array(indtarg) != -1):
         # Write initialization condition
-        condtarg = iso.__dict__.has_key('verticesT')
+        condtarg = 'verticeT' in iso.__dict__
     else:
         # If no Target or Host, target tracks initialization considered done
         condtarg = True
@@ -501,12 +501,12 @@ def compute_derived_params(vd, pastisfile, sampling=1, **kwargs):
     # Blend stars are present
     if any(n.array(indblend) != -1):
         # Write initialization condition
-        condblend = iso.__dict__.has_key('verticesY')
+        condblend = 'verticesY' in iso.__dict__
     else:
         condblend = True
 
     # Initialize only if needed
-    if not phot.__dict__.has_key('AMz') or not condtarg or not condblend:
+    if 'AMz' not in phot.__dict__ or not condtarg or not condblend:
         datadict, a = readdata(dd[2])
         initialize(dd[0], datadict, dd[1])
 
@@ -763,7 +763,7 @@ def compute_derived_params(vd, pastisfile, sampling=1, **kwargs):
                 ##
                 ## Compute radius, density, and surface gravity
                 ##
-                if dvd.has_key(oo + '_kr'):
+                if oo + '_kr' in dvd:
                     kr = dvd[oo + '_kr']
 
                     dvd[oo + '_Rp'] = Rs * kr * Rsun2Rjup
@@ -801,7 +801,7 @@ def compute_derived_params(vd, pastisfile, sampling=1, **kwargs):
                 ##
                 ## Compute equilibrium temperature
                 ## (assuming black body and isotropic planetary emission)
-                if dvd.has_key(oo + '_albedo2'):
+                if oo + '_albedo2' in dvd:
                     albedo = dvd[oo + '_albedo2']
                     teff = dvd[oos + '_teff']
                     a_rsun = dvd[oo + '_a'] * au / Rsun
@@ -922,7 +922,7 @@ def get_best_values(C, BI=0.0, bestparam='posterior'):
     for key in vd.keys():
         skey = key.split('_')
         if skey[0] == 'logL' or skey[0] == 'posterior': continue
-        if bestvalues.has_key(skey[0]):
+        if skey[0] in bestvalues:
             pass
         else:
             bestvalues[skey[0]] = {}
@@ -993,7 +993,7 @@ def get_median_values(C, BI=0.0):
     for key in vd.keys():
         skey = key.split('_')
         if skey[0] == 'logL' or skey[0] == 'posterior': continue
-        if medianvalues.has_key(skey[0]):
+        if skey[0] in medianvalues:
             pass
         else:
             medianvalues[skey[0]] = {}
@@ -1404,8 +1404,7 @@ def corrlength(x, step=1, BI=0.2, BO=1.0, widget=False, verbose=True,
 
         #
         if (j + 1) % 100 == 0 and verbose:
-            print 'Step ' + str(j + 1) + ' out of a maximum of ' + str(
-                len(corr))
+            print('Step {} out of a maximum of {}'.format(j+1, len(corr)))
             os.sys.stdout.flush()
 
         if j > 500.0 and stop:
@@ -1436,7 +1435,7 @@ def corrlength(x, step=1, BI=0.2, BO=1.0, widget=False, verbose=True,
         ax.axhline(1 / e, ls=':', color='0.5')
         ax.axvline(corrlength, ls=':', color='0.5')
         p.draw()
-        print ax
+        print(ax)
 
     return shifts, corr, corrlength
 
@@ -1502,8 +1501,7 @@ def corrlength2(x, step=1, BI=0.2, widget=False):
         corr.append(((x * xs).mean() - xx2) / den)
         #
         if (j + 1) % 100 == 0 and not widget:
-            print 'Step ' + str(j + 1) + ' out of a maximum of ' + str(
-                len(corr))
+            print('Step {} out of a maximum of {}'.format(j+1, len(corr)))
             os.sys.stdout.flush()
 
         if j > 500.0:
@@ -1699,7 +1697,7 @@ def corrlength_multichain2(vds, step=1, BI=0.2, plot=False, widget=False):
     elif isinstance(vds[0], dict):
         vdd = vds[0].copy()
     else:
-        print type(vds[0])
+        print(type(vds[0]))
 
     ## Create list of starting indexes
     try:
@@ -1730,7 +1728,7 @@ def corrlength_multichain2(vds, step=1, BI=0.2, plot=False, widget=False):
             elif isinstance(vds[chain], dict):
                 vdd = vds[chain].copy()
             else:
-                if not widget: print type(vds[chain])
+                if not widget: print(type(vds[chain]))
 
             shifts, corr, corrlengthc = corrlength2(vdd[parameter],
                                                     step=step, BI=BI[chain],
@@ -1818,7 +1816,7 @@ def checkpriors(vdc, pastisfile, **kargs):
     elif isinstance(vdc, dict):
         vdd = vdc.copy()
     else:
-        print type(vdc)
+        print(type(vdc))
 
     ### PLOTS
     import pylab as p
@@ -2119,7 +2117,7 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
     elif isinstance(vds[0], VDchain):
         vdi = vds[0].get_value_dict()
     else:
-        print vds[0].__class__
+        print(vds[0].__class__)
 
     start_index = n.round(BI * len(vdi[vdi.keys()[0]]))
     end_index = n.round(BO * len(vdi[vdi.keys()[0]]))
@@ -2454,7 +2452,7 @@ def find_BI(vds, samplesize=0.05, endsample=0.1, backwards=True,
 
                 if verbose:
                     # print z, zz, probKS
-                    print ei, ef, mean_yf, var_yf, n.mean(ys), var_ys, condAH
+                    print(ei, ef, mean_yf, var_yf, n.mean(ys), var_ys, condAH)
                 zlisti.append(n.abs(z))
                 zzlisti.append(n.abs(zz))
 
@@ -2708,7 +2706,7 @@ def get_priors_from_value_dict(vds, pastisfile):
 
     newvds = []
     for vd in vds:
-        print vd
+        print(vd)
 
         # Get value dict
         if isinstance(vd, VDchain):

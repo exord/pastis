@@ -6,24 +6,22 @@ import numpy as n
 # Intra-package imports
 # from . import *
 from . import TrefRV, Nmax, beaming, spotmodel
-from .photometry import ww
 from .constants import G, c, Msun, Rsun, pc2Rsun, Mjup2Msun, Rjup2Rsun, Mjup
 from .exceptions import SpectrumInterpolError
 from .models.PHOT import run_EBOP
 from .models.PHOT import macula
 from . import tools
-
 from . import photometry as phot
-# from photometry import AMz, AMteff, AMlogg, AMspectra, AMspectra01, ww
 
 try:
-    from photometry import AMz, AMteff, AMlogg, AMspectra, AMspectra01, ww, \
-        Filters
+    # from .photometry import ww
+    from .photometry import (AMz, AMteff, AMlogg, AMspectra, AMspectra01, ww,
+                            Filters)
 except ImportError:
     pass
     # Commented (see issue #334)
-    # print('Could not import stellar atmosphere models. Are you only using
-    # FitObs objects?')
+    print('Could not import stellar atmosphere models. Are you only using ' 
+          'FitObs objects?')
 
 from . import isochrones as iso
 from . import limbdarkening as ldark
@@ -34,7 +32,7 @@ try:
     from .extinction import EBmVfunc
 except ImportError:
     # Commented (see issue #334)
-    #print('Could not load extinction functions. Will E(B-V) be fitted?')
+    # print('Could not load extinction functions. Will E(B-V) be fitted?')
     # In this case, Absorption might be fitted.
     pass
 
@@ -66,16 +64,16 @@ class Star(object):
 
         self.dens = kwargs.pop('dens', None)
 
-        # # Stellar atmospheric parameters
+        # Stellar atmospheric parameters
         self.teff = kwargs.pop('teff', None)
         self.logg = kwargs.pop('logg', None)
         self.zeta = kwargs.pop('zeta', 0.)
 
-        ### Direct parameters
+        # Direct parameters
         self.mact = kwargs.pop('mact', None)
         self.R = kwargs.pop('R', None)
 
-        ### Other parameters
+        # Other parameters
         self.dist = kwargs.pop('dist', 0.001)
         self.vsini = kwargs.pop('vsini', 10.0)
         self.v0 = kwargs.pop('v0', 0.0)
@@ -121,7 +119,7 @@ class Star(object):
                     for spotparam in ['lambda0', 'phi0', 'alphamax', 'fspot',
                                       'tmax', 'life', 'ingress', 'egress']:
                         self.__setattr__('spot' + str(i) + spotparam,
-                                         kwargs.pop('spot' + str(i) + spotparam,
+                                         kwargs.pop('spot'+str(i)+spotparam,
                                                     None))
 
         # To avoid nan in spectrum
@@ -336,11 +334,10 @@ class Target(Star):
         Get parameters from evolution models.
         """
 
-        ## Get Target Star parameters from evolution tracks
+        # Get Target Star parameters from evolution tracks
         mact, logL, logage = iso.get_stellarparams_target(self.z,
                                                           self.logg,
-                                                          log10(self.teff)
-        )
+                                                          log10(self.teff))
         self.L = 10 ** logL
         self.logage = logage
         self.mact = mact
@@ -430,8 +427,8 @@ class WhiteDwarf(Star):
         """
         Get the spectrum of the white dwarf
         """
-        #print('get_spectrum white dwarf')
-        #print(self.teff,self.logg,self.ebmv,self.dist)
+        # print('get_spectrum white dwarf')
+        # print(self.teff,self.logg,self.ebmv,self.dist)
         try:
             return self.spectrum
         except AttributeError:
@@ -861,7 +858,7 @@ class PlanSys(object):
         # Tp = orbital_parameters.Tp
         ecc = orbital_parameters.ecc
         omega = orbital_parameters.omega
-        
+
         if isphase:
             # Convert transit phase to periastron phase
             Mc = orbital_parameters.get_E0() - ecc * n.sin(
@@ -1214,7 +1211,7 @@ class FitBinary(object):
         # Tp = orbital_parameters.Tp
         ecc = self.orbital_parameters.ecc
         omega = self.orbital_parameters.omega
-        
+
         if isphase:
             # Convert transit phase to periastron phase
             Mc = self.orbital_parameters.get_E0() - ecc * n.sin(
@@ -1727,7 +1724,7 @@ class FitPlanet(FitBinary):
 class orbital_parameters(object):
     """
     Sub class for orbital parameters
-    ChangeLog : 
+    ChangeLog :
     2012-03-28 : omega changed to radian
     """
 
@@ -1920,4 +1917,4 @@ class Drift(object):
             self.quad * (t - self.TrefRV)**2 / 365.25**2 +
             self.cub * (t - self.TrefRV)**3 / 365.25**3)
 
-
+__all__ = [Star, Triple]
