@@ -155,7 +155,10 @@ def read_BTsettl_spectra():
     f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'BTspec_20.pickle'), 'rb')
 
     global ww, AMz, AMteff, AMlogg
-    ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f, encoding='bytes')
+    if sys.version_info > (3, 0):
+        ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f, encoding='bytes')
+    else:
+        ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f)
     f.close()
 
     ## Create dictionary with information about the model
