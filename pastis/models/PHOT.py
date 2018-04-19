@@ -1,12 +1,17 @@
 # 2012-03-20: implemented CoRoT colors.
+import sys
 import numpy as n
-import scipy
 #import pymacula
 
 from .. import photometry as phot
-#import task2_components as task2
 
-from .. import EBOPparamError
+if sys.version_info > (3, 0):
+    # Python3
+    import task2_components3 as task2
+else:
+    import task2_components as task2
+    
+from ..exceptions import EBOPparamError
 
 def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
     """
@@ -193,10 +198,8 @@ def run_EBOP(v, ldtype, x, Nx, Nmax = None, components = False):
 
     else:
         return call_task2(v, ldtype, Nx, x, components = components)
-
     
 def call_task2(v, ldtype, Npoints, time, components = False):
-    import task2_components as task2
     
     # Define output arrays
     outflux = n.zeros(Npoints)

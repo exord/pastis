@@ -1,21 +1,19 @@
 import sys, os
 import numpy as n
 from scipy import interpolate
-
-if sys.version.startswith('2'):
+# import pyfits
+if sys.version_info < (3, 0):
     import cPickle as pickle
-elif sys.version.startswith('3'):
+else:
     import pickle
-#import pyfits
+
 
 # Intra-package import
-from . import c
-from . import SpectrumInterpolError
+from .paths import libpath, filterpath, zeromagfile
+from .constants import c
+from .exceptions import SpectrumInterpolError
 from .tools import loadtxt_iter
 from . import tools
-
-
-from . import libpath, zeromagfile, filterpath
 
 Allpbands = ['CoRoT-W', 'Kepler', 'IRAC-I1', 'IRAC-I2', 'IRAC-I3', 'IRAC-I4',
              'SDSS-U', 'SDSS-G', 'SDSS-R', 'SDSS-I', 'SDSS-Z', 'Johnson-U',
@@ -154,10 +152,13 @@ def read_BTsettl_spectra():
     Flux units are in erg/s/cm^2/A.
     """
     # Read spectra from file
-    f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'BTspec_20.pickle'))
+    f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'BTspec_20.pickle'), 'rb')
 
     global ww, AMz, AMteff, AMlogg
-    ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f)
+    if sys.version_info > (3, 0):
+        ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f, encoding='bytes')
+    else:
+        ww, AMz, AMteff, AMlogg, AMspectra = pickle.load(f)
     f.close()
 
     ## Create dictionary with information about the model
@@ -234,7 +235,7 @@ def read_wwHR():
     Read wavelenght of the high resolution BT-Settl atmosphere model 
     if wwHR is already defined, skip
     """
-    if not globals().has_key('wwHR'):
+    if not 'wwHR' in globals():
         f = open(os.path.join(libpath, 'AM', 'BT-Settl', 'Flux_envolvente',
 			      'lambda.pickle')
 		 )
@@ -287,11 +288,11 @@ def get_interpolated_AM(z, teff, logg, HR = False):
     indlogg = n.searchsorted(AMlogg, logg)
     
     if indz == 0 or indz == infoAM['lenAMz']:
-        raise SpectrummInterpolError('Metallicity (z = %.2f) outside grid.'%z,
+        raise SpectrumInterpolError('Metallicity (z = %.2f) outside grid.'%z,
                                      indz, indteff, indlogg, outside = True
                                      )
     if indteff == 0 or indteff == infoAM['lenAMteff']:
-        raise SpectrummInterpolError('Effective temperature (teff = %d) outside grid.'%teff,
+        raise SpectrumInterpolError('Effective temperature (teff = %d) outside grid.'%teff,
                                      indz, indteff, indlogg, outside = True
                                      )
     if indlogg == 0 or indlogg == infoAM['lenAMlogg']:

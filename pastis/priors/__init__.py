@@ -50,7 +50,7 @@ def run_prior(pastisfile):
     ## 
 
     ## Compute size of simulation from minsizefile
-    if hyppriordict.has_key('simsize'):
+    if 'simsize' in hyppriordict:
         solid_angle_arcsec = hyppriordict['simsize'] * 3600**2.0
         solid_angle_degree_squared = hyppriordict['simsize']
 

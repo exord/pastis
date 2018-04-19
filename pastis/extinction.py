@@ -1,7 +1,8 @@
-import sys, os
+import os
 import numpy as n
 from scipy import interpolate
-from . import idlexec, libpath
+
+from .paths import idlexec, libpath
 from .tools import loadtxt_iter
 
 #Define path

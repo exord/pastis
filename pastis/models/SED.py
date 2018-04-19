@@ -1,6 +1,6 @@
 from ..AstroClasses import *
 from .. import photometry as phot
-from .. import GlobalSpectrumError
+from ..exceptions import GlobalSpectrumError
 
 
 def PASTIS_SED(photbands, *args):
@@ -11,7 +11,7 @@ def PASTIS_SED(photbands, *args):
     ### COMMENTED WHEN TRANSLATED TO PACKAGE ####
     ### global_spectrum WAS NOT DELETED IN PASTIS_MCMC ###
     """
-    if globals().has_key('global_spectrum'):
+    if 'global_spectrum' in globals():
         pass
     else: compute_global_spectrum(*args)
     """

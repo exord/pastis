@@ -225,7 +225,7 @@ def compare_hist(vds1, vds2, keys = 'all', BI = 0.5):
         keys = vds1[0].keys()
 
     for kk in keys:
-        if vd.has_key(kk):
+        if kk in vd:
             f1 = p.figure()
             ax1 = f1.add_subplot(111)
 

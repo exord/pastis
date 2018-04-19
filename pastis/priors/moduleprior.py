@@ -155,7 +155,7 @@ def proba_BEB(data, mag_min, mag_max, mag_target, solid_angle_arc, period, error
     magbins = n.arange(mag_min, mag_max + binsize, binsize)
 
     ## If the column-matching dicitonary is not defined, define it
-    if not locals().has_key('cols'):
+    if 'cols' not in locals():
         cols = parameter_column(model)
     
     ### For all modeled stars, compute mass and radius of a potential companion
@@ -258,7 +258,7 @@ def proba_BTP(data, mag_min, mag_max, mag_target, solid_angle_arc, period, error
     magbins = n.arange(mag_min, mag_max + binsize, binsize)
 
     ## If the column-matching dicitonary is not defined, define it
-    if not locals().has_key('cols'):
+    if 'cols' not in locals():
         cols = parameter_column(model)
 
     ### For all modeled stars, compute mass and radius of a potential companion

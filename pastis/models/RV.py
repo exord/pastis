@@ -6,8 +6,9 @@ import numpy as n
 from scipy import optimize
 
 # Intra-package imports
+from ..paths import libpath
 from . import RVgaussianFitError
-import AstroClasses as ac
+from .. import AstroClasses as ac
 from ..velocimetry import *
 from . import Pyarome
 
@@ -474,11 +475,16 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
         fwhm_simu = n.zeros(len(t_rv), float)
         contrast_simu = n.zeros(len(t_rv), float)
 
-    if RVdatadict.has_key('BIS'): bis_simu = n.zeros(len(t_rv), float)
-    if RVdatadict.has_key('Vspan'): vspan_simu = n.zeros(len(t_rv), float)
-    if RVdatadict.has_key('Wspan'): wspan_simu = n.zeros(len(t_rv), float)
-    if RVdatadict.has_key('BiGauss'): bigauss_simu = n.zeros(len(t_rv), float)
-    if RVdatadict.has_key('Vasy'): vasy_simu = n.zeros(len(t_rv), float)
+    if 'BIS' in RVdatadict: 
+        bis_simu = n.zeros(len(t_rv), float)
+    if 'Vspan' in RVdatadict: 
+        vspan_simu = n.zeros(len(t_rv), float)
+    if 'Wspan' in RVdatadict: 
+        wspan_simu = n.zeros(len(t_rv), float)
+    if 'BiGauss' in RVdatadict: 
+        bigauss_simu = n.zeros(len(t_rv), float)
+    if 'Vasy' in RVdatadict: 
+        vasy_simu = n.zeros(len(t_rv), float)
 
     condFitBin = map(isinstance, args, [ac.FitBinary]*len(args))
     condIsoBin = map(isinstance, args, [ac.IsoBinary]*len(args))
@@ -493,28 +499,43 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
         contrast = get_contrast(FWHM, args[0].star.BmV, args[0].star.z, spectro, mask)
         sigma0 = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro, output='sigma0')
         CCF_width = FWHM/(2.*n.sqrt(2.*n.log(2.)))
-        if RVdatadict.has_key('RV')  :
+        if 'RV' in RVdatadict:
             output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
             for p in args[0].planets:
                 if p.orbital_parameters.spinorbit is not None :
                     if isinstance(p, ac.Planet) :output_dict['RV'] += Pyarome.arome(p.get_true_lat(t_rv), p.ar*(1.-p.orbital_parameters.ecc**2)/(1.+p.orbital_parameters.ecc*n.sin(p.orbital_parameters.omega)), p.orbital_parameters.incl, p.orbital_parameters.spinorbit, [args[0].star.ua, args[0].star.ub], beta0=sigma0, Vsini=args[0].star.vsini, sigma0=CCF_width, zeta=args[0].star.zeta, Rp=p.Rp/p.star.R, units='degree')
                     elif isinstance(p, ac.FitPlanet) :output_dict['RV'] += Pyarome.arome(p.get_true_lat(t_rv), p.ar*(1.-p.orbital_parameters.ecc**2)/(1.+p.orbital_parameters.ecc*n.sin(p.orbital_parameters.omega)), p.orbital_parameters.incl, p.orbital_parameters.spinorbit, [args[0].star.ua, args[0].star.ub], beta0=sigma0, Vsini=args[0].star.vsini, sigma0=CCF_width, zeta=args[0].star.zeta, Rp=p.kr, units='radian')
-        if RVdatadict.has_key('CTRS') : output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
-        if RVdatadict.has_key('FWHM') : output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if RVdatadict.has_key('BIS') : output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if RVdatadict.has_key('Vspan') : output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if RVdatadict.has_key('Wspan') : output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if RVdatadict.has_key('BiGauss') : output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if RVdatadict.has_key('Vasy') : output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+        if 'CTRS' in RVdatadict: 
+            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
+        if 'FWHM' in RVdatadict: 
+            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
+        if 'BIS' in RVdatadict: 
+            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
+        if 'Vspan' in RVdatadict: 
+            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
+        if 'Wspan' in RVdatadict: 
+            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
+        if 'BiGauss' in RVdatadict: 
+            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
+        if 'Vasy' in RVdatadict: 
+            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
 
-        if RVdatadict.has_key('RV')  : output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
-        if RVdatadict.has_key('CTRS') : output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
-        if RVdatadict.has_key('FWHM') : output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if RVdatadict.has_key('BIS') : output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if RVdatadict.has_key('Vspan') : output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if RVdatadict.has_key('Wspan') : output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if RVdatadict.has_key('BiGauss') : output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if RVdatadict.has_key('Vasy') : output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+        if 'RV' in RVdatadict: 
+            output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
+        if 'CTRS' in RVdatadict: 
+            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
+        if 'FWHM' in RVdatadict: 
+            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
+        if 'BIS' in RVdatadict: 
+            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
+        if 'Vspan' in RVdatadict: 
+            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
+        if 'Wspan' in RVdatadict: 
+            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
+        if 'BiGauss' in RVdatadict: 
+            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
+        if 'Vasy' in RVdatadict: 
+            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
 
     elif all(condFitBin or cond_drift) and \
             not any(condIsoBin) and not any(condFitPlanet):
@@ -525,14 +546,22 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
         for obj in args:
             rv_simu += obj.get_RV(t_rv)
 
-        if RVdatadict.has_key('RV')  : output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
-        if RVdatadict.has_key('CTRS') : output_dict['CTRS'] = n.zeros(len(t_rv), float) - RVdatadict['CTRS']['offset']
-        if RVdatadict.has_key('FWHM') : output_dict['FWHM'] = n.zeros(len(t_rv), float) - RVdatadict['FWHM']['offset']
-        if RVdatadict.has_key('BIS') : output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if RVdatadict.has_key('Vspan') : output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if RVdatadict.has_key('Wspan') : output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if RVdatadict.has_key('BiGauss') : output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if RVdatadict.has_key('Vasy') : output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+        if 'RV' in RVdatadict: 
+            output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
+        if 'CTRS' in RVdatadict: 
+            output_dict['CTRS'] = n.zeros(len(t_rv), float) - RVdatadict['CTRS']['offset']
+        if 'FWHM' in RVdatadict:
+            output_dict['FWHM'] = n.zeros(len(t_rv), float) - RVdatadict['FWHM']['offset']
+        if 'BIS' in RVdatadict:
+            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
+        if 'Vspan' in RVdatadict: 
+            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
+        if 'Wspan' in RVdatadict:
+            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
+        if 'BiGauss' in RVdatadict:
+            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
+        if 'Vasy' in RVdatadict:
+            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
 
     elif all(n.array(condFitPlanet) | n.array(cond_drift)):
         for obj in args:
@@ -541,14 +570,22 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
                 sigma0 = get_FWHM(obj.vsini1, obj.BmV, spectro, output='sigma0')
                 CCF_width = get_FWHM(obj.vsini1, obj.BmV, spectro, output='sigma')
                 rv_simu += Pyarome.arome(obj.get_true_lat(t_rv), obj.ar*(1.-obj.orbital_parameters.ecc**2)/(1.+obj.orbital_parameters.ecc*n.sin(obj.orbital_parameters.omega)), obj.orbital_parameters.incl, obj.orbital_parameters.spinorbit, [obj.ua1, obj.ub1], beta0=sigma0, Vsini=obj.vsini1, sigma0=CCF_width, zeta=obj.zeta1, Rp=obj.kr, units='radians')
-        if RVdatadict.has_key('RV')  : output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
-        if RVdatadict.has_key('CTRS') : output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
-        if RVdatadict.has_key('FWHM') : output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if RVdatadict.has_key('BIS') : output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if RVdatadict.has_key('Vspan') : output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if RVdatadict.has_key('Wspan') : output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if RVdatadict.has_key('BiGauss') : output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if RVdatadict.has_key('Vasy') : output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+        if 'RV' in RVdatadict:
+            output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
+        if 'CTRS' in RVdatadict:
+            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
+        if 'FWHM' in RVdatadict:
+            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
+        if 'BIS' in RVdatadict:
+            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
+        if 'Vspan' in RVdatadict:
+            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
+        if 'Wspan' in RVdatadict:
+            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
+        if 'BiGauss' in RVdatadict:
+            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
+        if 'Vasy' in RVdatadict:
+            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
 
     else:
         nb_star, FWHM, contrast, flux, rv0 = CCF_prop(t_rv, spectro, mask, *args)
@@ -578,14 +615,7 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
 
             # Fit the blended CCF
 
-            if RVdatadict.has_key('RV') \
-                    or RVdatadict.has_key('CTRS') \
-                    or RVdatadict.has_key('FWHM') \
-                    or RVdatadict.has_key('BIS') \
-                    or RVdatadict.has_key('Vspan') \
-                    or RVdatadict.has_key('Wspan') \
-                    or RVdatadict.has_key('BiGauss') \
-                    or RVdatadict.has_key('Vasy') :
+            if np.any([oo in RVdatadict for oo in observables]):
                 p0 = [contrast[n.argmax(flux*contrast/100.)], rv0[n.argmax(flux*contrast/100.),i], FWHM[n.argmax(flux*contrast/100.)]/2.3548]
                 flag = 0
                 try:
@@ -600,24 +630,32 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
                     fwhm_simu[i] = CCF_res[2]*2.3548
                     contrast_simu[i] = CCF_res[0]
 
-            if RVdatadict.has_key('BIS'):
+            if 'BIS' in RVdatadict:
                 bis_simu[i] = fit_BIS(RV_CCF, normalized_CCF, CCF_res)
-            if RVdatadict.has_key('Vspan'):
+            if 'Vspan' in RVdatadict:
                 vspan_simu[i] = vspan(RV_CCF, normalized_CCF, CCF_res, mode = 'TB')
-            if RVdatadict.has_key('Wspan'):
+            if 'Wspan' in RVdatadict:
                 wspan_simu[i] = vspan(RV_CCF, normalized_CCF, CCF_res, mode = 'RB')
-            if RVdatadict.has_key('BiGauss'):
+            if 'BiGauss' in RVdatadict:
                 bigauss_simu[i] = fit_BiGauss(RV_CCF, normalized_CCF, CCF_res)
-            if RVdatadict.has_key('Vasy'):
+            if 'Vasy' in RVdatadict:
                 vasy_simu[i] = weight_interp_depth(RV_CCF-CCF_res[1], normalized_CCF, [CCF_res[0]/100., 0., CCF_res[2]*2.3548])
 
-        if RVdatadict.has_key('RV')  :     output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
-        if RVdatadict.has_key('CTRS') :    output_dict['CTRS'] = contrast_simu - RVdatadict['CTRS']['offset']
-        if RVdatadict.has_key('FWHM') :    output_dict['FWHM'] = fwhm_simu - RVdatadict['FWHM']['offset']
-        if RVdatadict.has_key('BIS') :     output_dict['BIS'] = bis_simu - RVdatadict['BIS']['offset']
-        if RVdatadict.has_key('Vspan') :   output_dict['Vspan'] = vspan_simu - RVdatadict['Vspan']['offset']
-        if RVdatadict.has_key('Wspan') :   output_dict['Wspan'] = wspan_simu - RVdatadict['Wspan']['offset']
-        if RVdatadict.has_key('BiGauss') : output_dict['BiGauss'] = bigauss_simu - RVdatadict['BiGauss']['offset']
-        if RVdatadict.has_key('Vasy'):    output_dict['Vasy'] = vasy_simu - RVdatadict['Vasy']['offset']
+        if 'RV' in RVdatadict:
+            output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
+        if 'CTRS' in RVdatadict:
+            output_dict['CTRS'] = contrast_simu - RVdatadict['CTRS']['offset']
+        if 'FWHM' in RVdatadict:
+            output_dict['FWHM'] = fwhm_simu - RVdatadict['FWHM']['offset']
+        if 'BIS' in RVdatadict:
+            output_dict['BIS'] = bis_simu - RVdatadict['BIS']['offset']
+        if 'Vspan' in RVdatadict:
+            output_dict['Vspan'] = vspan_simu - RVdatadict['Vspan']['offset']
+        if 'Wspan' in RVdatadict:
+            output_dict['Wspan'] = wspan_simu - RVdatadict['Wspan']['offset']
+        if 'BiGauss' in RVdatadict:
+            output_dict['BiGauss'] = bigauss_simu - RVdatadict['BiGauss']['offset']
+        if 'Vasy' in RVdatadict:
+            output_dict['Vasy'] = vasy_simu - RVdatadict['Vasy']['offset']
 
     return output_dict

@@ -268,7 +268,7 @@ class Chain(object):
         vd = self.get_value_dict()
         for key in self._labeldict.keys():
             skey = key.split('_')
-            if medianvalues.has_key(skey[0]):
+            if skey[0] in medianvalues:
                 pass
             else:
                 medianvalues[skey[0]] = {}
@@ -292,7 +292,7 @@ class Chain(object):
         indi = n.round(BI*self.N)
         for key in self._labeldict.keys():
             skey = key.split('_')
-            if bestvalues.has_key(skey[0]):
+            if skey[0] in bestvalues:
                 pass
             else:
                 bestvalues[skey[0]] = {}

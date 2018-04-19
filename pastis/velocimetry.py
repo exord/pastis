@@ -13,7 +13,7 @@ def initialize_RV(datadict):
 
     for key in datadict.keys():
         if datadict[key]['type'] == 'RV':
-            if datadict[key]['data'].has_key('vspan'):
+            if 'vspan' in datadict[key]['data']:
                 print("... Vspan detected ...")
                 print("... Oversampling the CCF ...")
                 stepccf = 0.001
