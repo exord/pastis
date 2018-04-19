@@ -6,7 +6,7 @@
 '''
 from . import TypeList
 from .photometry import Allpbands
-from .AstroClasses import *
+from . import AstroClasses as ac
 
 
 def make_triple_component(objname, configdict, imposeobj=None):
@@ -66,7 +66,7 @@ def make_binary(objname, dd, imposeobj = None):
         for key in dd.keys():
             ddop[key] = dd[key][0]
         #dd['orbital_parameters'] = orbital_parameters(**ddop)
-        orbit = orbital_parameters(**ddop)
+        orbit = ac.orbital_parameters(**ddop)
 
     if 'FitBinary' in objname or 'FitPlanet' in objname:
         ddbin = {}
@@ -75,10 +75,10 @@ def make_binary(objname, dd, imposeobj = None):
         ddbin['orbital_parameters'] = orbit
 
         if 'FitBinary' in objname:
-            binary = FitBinary(**ddbin)
+            binary = ac.FitBinary(**ddbin)
 
         elif 'FitPlanet' in objname:
-            binary = FitPlanet(**ddbin)
+            binary = ac.FitPlanet(**ddbin)
 
     elif 'IsoBinary' in objname or 'qBinary' in objname:
         ## Construct primary star
@@ -111,7 +111,7 @@ def make_binary(objname, dd, imposeobj = None):
                 ddbin[key] = inputdict[objname][key][0]
             ddbin['orbital_parameters'] = orbit
 
-            binary = qBinary(primary = star1, **ddbin)
+            binary = ac.qBinary(primary = star1, **ddbin)
 
         elif 'IsoBinary' in objname:
             ## Construct secondary imposing primary age, z, dist, v0, and E(B-V)
@@ -135,7 +135,7 @@ def make_binary(objname, dd, imposeobj = None):
             except NameError:
                 pass
 
-            binary = IsoBinary(orbit, star1, star2)
+            binary = ac.IsoBinary(orbit, star1, star2)
 
     return binary
 
@@ -177,21 +177,21 @@ def make_plansys(objname, dd, imposeobj = None):
             ddp[key] = inputdict[dd[planet]][key][0]
 
         if not 'orbital_parameters' in ddp.keys():
-            ddp['orbital_parameters'] = orbital_parameters(**ddp)
+            ddp['orbital_parameters'] = ac.orbital_parameters(**ddp)
 
         ### BE CAREFUL; orbital_parameters DOES NOT REMOVE ELEMENTS FROM
         ### DICTIONARY. AS A CONSECUENCE, PLANET EXPLODES.
 
         ## Construct Classical Planets
         if 'FitPlanet' in dd[planet]:
-            planets.append(FitPlanet(**ddp))
+            planets.append(ac.FitPlanet(**ddp))
             inputdict.pop(dd[planet])
         elif 'Planet' in dd[planet]:
-            planets.append(Planet(**ddp))
+            planets.append(ac.Planet(**ddp))
             inputdict.pop(dd[planet])
 
     ## Construct PlanSys
-    plansys = PlanSys(star, *planets)
+    plansys = ac.PlanSys(star, *planets)
 
     return plansys
 
@@ -206,19 +206,19 @@ def make_star(objname, dd, imposeobj = None):
         dd['ebmv'] = imposeobj.ebmv
 
     if 'Target' in objname:
-        star = Target(**dd)
+        star = ac.Target(**dd)
 
     elif 'PlanetHost' in objname:
-        star = PlanetHost(**dd)
+        star = ac.PlanetHost(**dd)
 
     elif 'Blend' in objname:
-        star = Blend(**dd)
+        star = ac.Blend(**dd)
 
     elif 'Star' in objname:
-        star = Star(**dd)
+        star = ac.Star(**dd)
 
     elif 'WhiteDwarf' in objname:
-        star = WhiteDwarf(**dd)
+        star = ac.WhiteDwarf(**dd)
 
     return star
 
@@ -272,10 +272,10 @@ def ObjectBuilder(dictionary) :
                 ddop = {}
                 for key in dd.keys():
                     ddop[key] = dd[key][0]
-                dd['orbital_parameters'] = orbital_parameters(**ddop)
+                dd['orbital_parameters'] = ac.orbital_parameters(**ddop)
 
             ## Build Triple
-            objects[obj] = Triple(dd['orbital_parameters'], obj1, obj2)
+            objects[obj] = ac.Triple(dd['orbital_parameters'], obj1, obj2)
 
 
             ## Remove Triple object from list to construct.
@@ -351,7 +351,7 @@ def ObjectBuilder(dictionary) :
             for key in inputdict[obj].keys():
                 dd[key] = inputdict[obj][key][0]
 
-            objects[obj] = Drift(**dd)
+            objects[obj] = ac.Drift(**dd)
 
         ####
         # Remove data-related objects
