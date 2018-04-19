@@ -156,12 +156,12 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
 
         except EBOPparamError as eboperr:
             print('Parameter outside limits for JKTEBOP; '
-                  'error message: {}'.format(eboperr.message))
+                  'error message: {}'.format(eboperr))
             pick_random_point(labeldict, priordict)
 
         except ValueError as verr:
             print('Value Error. Trying new starting point. '
-                  'Message: {}'.format(verr.message))
+                  'Message: {}'.format(verr))
             pick_random_point(labeldict, priordict)
 
         else:
@@ -403,13 +403,13 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
 
         except EBOPparamError as eboperr:
             print('Parameter outside limits for JKTEBOP; '
-                  'error message: {}'.format(eboperr.message))
+                  'error message: {}'.format(eboperr))
             markov_chain.reject_proposal(i, priorx, Lx, logLx, likedictx)
             continue
         
         except ValueError as verr:
             print('Value Error. Rejecting step. '
-                  'Message: {}'.format(verr.message))
+                  'Message: {}'.format(verr))
             markov_chain.reject_proposal(i, priorx, Lx, logLx, likedictx)
             continue
             
