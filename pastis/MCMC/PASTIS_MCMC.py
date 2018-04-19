@@ -26,7 +26,7 @@ import PCA
 # Imports from upper package level
 # from .. import inputdicts
 from .. import ObjectBuilder
-from ..AstroClasses import *
+from .. import AstroClasses as ac
 from ..tools import rebin, rebin_texp
 from ..photometry import corot_colors
 from ..models import SED
@@ -795,31 +795,31 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
         for obj in objects:
 
             # For PiB and TRIPLE
-            if isinstance(obj, Triple):
+            if isinstance(obj, ac.Triple):
                 # Get primary magnitude
                 mag_target = obj.object1.get_mag('Johnson-V')
 
-                if isinstance(obj.object2, PlanSys):
+                if isinstance(obj.object2, ac.PlanSys):
                     # Get secondary magnitude
                     mag_binary = obj.object2.star.get_mag('Johnson-V')
                     checkmag = True
-                elif isinstance(obj.object2, IsoBinary):
+                elif isinstance(obj.object2, ac.IsoBinary):
                     # Get secondary magnitude
                     mag_binary = obj.object2.star1.get_mag('Johnson-V')
                     checkmag = True
                 
             # For BEB and BTP
-            elif isinstance(obj, Target):
+            elif isinstance(obj, ac.Target):
                 # Get target magnitude
                 mag_target = obj.get_mag('Johnson-V')
                 checkmag = True
             
-            elif isinstance(obj, IsoBinary):
+            elif isinstance(obj, ac.IsoBinary):
                 # Get binary magnitude
                 mag_binary = obj.star1.get_mag('Johnson-V')
                 checkmag = True
             
-            elif isinstance(obj, PlanSys):
+            elif isinstance(obj, ac.PlanSys):
                 # Get binary magnitude
                 mag_binary = obj.star.get_mag('Johnson-V')
                 checkmag = True
