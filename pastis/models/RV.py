@@ -486,10 +486,14 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
     if 'Vasy' in RVdatadict: 
         vasy_simu = n.zeros(len(t_rv), float)
 
-    condFitBin = map(isinstance, args, [ac.FitBinary]*len(args))
-    condIsoBin = map(isinstance, args, [ac.IsoBinary]*len(args))
-    condFitPlanet = map(isinstance, args, [ac.FitPlanet]*len(args))
-    cond_drift = map(isinstance, args, [ac.Drift]*len(args))
+    # condFitBin = map(isinstance, args, [ac.FitBinary]*len(args))
+    condFitBin = [isinstance(x, ac.FitBinary) for x in args]
+    #condIsoBin = map(isinstance, args, [ac.IsoBinary]*len(args))
+    condIsoBin = [isinstance(x, ac.IsoBinary) for x in args]
+    #condFitPlanet = map(isinstance, args, [ac.FitPlanet]*len(args))
+    condFitPlanet = [isinstance(x, ac.FitPlanet) for x in args]
+    #cond_drift = map(isinstance, args, [ac.Drift]*len(args))
+    cond_drift = [isinstance(x, ac.Drift) for x in args]
 
     #print(args)
     #print('Here', condFitBin, condIsoBin, condFitPlanet, cond_drift)
