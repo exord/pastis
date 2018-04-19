@@ -2143,8 +2143,8 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
             values.append(vd[kk][start_index: end_index: thinning])
 
         values = n.array(values)
-        nn = len(values[0])
-        m = len(values[:, 0])
+        nn = len(values[0]) # Number of steps
+        m = len(values[:, 0]) # Number of walkers
 
         # Compute within-chain variance
         sm2 = n.var(values, axis=1, ddof=1)  # Variance for each chain
@@ -2184,20 +2184,16 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
 
         ## Compute degrees of freedom for F distribution for PSRF
         # see sect 3.5 and 3.7 of G & R
-        dfn = m - 1.0
+        dfn = m - 1
         dfd = 2.0 * W ** 2 / (n.var(sm2) / m)
 
         ## Compute 90%, 95% and 99% percentiles for this distribution
-        qq = []
-        for q in qs:
-            qq.append(scipy.stats.f.ppf(q, dfn, dfd))
-
-        qq = n.array(qq)
+        qq = scipy.stats.f.ppf(qs, dfn, dfd)
 
         lims = n.sqrt(
             ((nn - 1.) / nn + (m + 1.) / (nn * m) * qq) * df / (df - 2.0))
 
-        print('%s\t%.5f\t%.5f\t%.5f\t%.5f' % (kk, psr, lims[0],
+        print('%s\t%.5e\t%.5e\t%.5e\t%.5e' % (kk, psr, lims[0],
                                               lims[1], lims[2]))
 
     return
