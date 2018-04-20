@@ -13,18 +13,19 @@ from ..velocimetry import *
 from . import Pyarome
 
 # New imports and definitions for Fast Gauss version
-from ctypes import cdll, c_double, c_char_p, c_int, POINTER
+from ctypes import cdll, c_double, c_int, POINTER
 import os
 
 # lib = cdll.LoadLibrary(os.path.dirname(os.path.realpath(__file__)) +
 # "/fitgauss_c.so")
 lib = cdll.LoadLibrary(os.path.join(libpath, 'cpp', 'fitgauss_c.so'))
 # lib.gaussian_res.restype    = c_void
-lib.gaussian_res.argtypes   = [POINTER(c_double), POINTER(c_double), POINTER(c_double), c_int, POINTER(c_double)]
+lib.gaussian_res.argtypes   = [POINTER(c_double), POINTER(c_double), 
+                               POINTER(c_double), c_int, POINTER(c_double)]
 # lib.gaussian_res_J.restype  = c_void
-lib.gaussian_res_J.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), c_int, POINTER(c_double)]
+lib.gaussian_res_J.argtypes = [POINTER(c_double), POINTER(c_double), 
+                               POINTER(c_double), c_int, POINTER(c_double)]
 ##
-
 
 def CCF_interpolate(RV, CCF, params):
     # Bissector calculus using Chris-like method of squared interpolation
@@ -220,7 +221,6 @@ def vspan(x, y, p, mode = 'TB'):
 	else : vspan = 999.
 	return vspan
 
-
 def fit_BiGauss(x,y,p):
 	"""
 	p : [c, rv0, sig]
@@ -239,16 +239,14 @@ def fit_BIS(x, y, p):
 	Vleft = n.interp(seuil, 1.-y[left], x[left])
 	Vright = n.interp(seuil, y[right], x[right])
 	Vtop = 0.
-	for j in xrange(10,40):
+	for j in range(10,40):
 		Vtop += (Vright[-(j+1)] + Vleft[j])/2.
 	Vtop/=30.
 	Vbottom = 0.
-	for j in xrange(60, 90):
+	for j in range(60, 90):
 		Vbottom += (Vright[-(j+1)] + Vleft[j])/2.
 	Vbottom/=30.
 	return Vtop - Vbottom
-
-
 
 def get_FWHM(vsini, BmV, spectrograph, output = 'FWHM'):
 	"""
@@ -341,14 +339,13 @@ def profile_rot(x, x0, vsini, epsilon, ctrs, FWHM_instru = 9.9):
 	#CCF /= max(CCF)
 	return CCF
 
-
 def rot_profile(v, vsini, epsilon):
 
 	c1= 2. *(1.- epsilon)
 	c2= 0.5 * n.pi * epsilon
 
 	G=n.zeros(len(v), float)
-	for i in xrange(len(v)):
+	for i in range(len(v)):
 		if abs(v[i]) <= vsini:
 			Dv=(v[i] / vsini)**2.
 			a=1.- Dv
@@ -469,6 +466,7 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
     observables = ['RV', 'CTRS', 'FWHM', 'BIS', 'Vspan', 'Wspan', 'BiGauss',
                    'Vasy']
 
+    print(RVdatadict)
     # If any of the observables is in RVdatadict, initialise arrays
     if any([obs in RVdatadict for obs in observables]):
         rv_simu = n.zeros(len(t_rv), float)
@@ -495,14 +493,18 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
     #cond_drift = map(isinstance, args, [ac.Drift]*len(args))
     cond_drift = [isinstance(x, ac.Drift) for x in args]
 
-    #print(args)
-    #print('Here', condFitBin, condIsoBin, condFitPlanet, cond_drift)
+    # If sole object is a Planetary System
     if len(args) == 1 and isinstance(args[0], ac.PlanSys):
+        
+        # Get stellar B-V, FWHM (and sigma0), and contrast
         args[0].star.BmV = args[0].star.get_BmV()
         FWHM = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro)
-        contrast = get_contrast(FWHM, args[0].star.BmV, args[0].star.z, spectro, mask)
-        sigma0 = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro, output='sigma0')
+        sigma0 = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro, 
+                          output='sigma0')
+        contrast = get_contrast(FWHM, args[0].star.BmV, args[0].star.z, 
+                                spectro, mask)
         CCF_width = FWHM/(2.*n.sqrt(2.*n.log(2.)))
+
         if 'RV' in RVdatadict:
             output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
             for p in args[0].planets:
@@ -510,36 +512,15 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
                     if isinstance(p, ac.Planet) :output_dict['RV'] += Pyarome.arome(p.get_true_lat(t_rv), p.ar*(1.-p.orbital_parameters.ecc**2)/(1.+p.orbital_parameters.ecc*n.sin(p.orbital_parameters.omega)), p.orbital_parameters.incl, p.orbital_parameters.spinorbit, [args[0].star.ua, args[0].star.ub], beta0=sigma0, Vsini=args[0].star.vsini, sigma0=CCF_width, zeta=args[0].star.zeta, Rp=p.Rp/p.star.R, units='degree')
                     elif isinstance(p, ac.FitPlanet) :output_dict['RV'] += Pyarome.arome(p.get_true_lat(t_rv), p.ar*(1.-p.orbital_parameters.ecc**2)/(1.+p.orbital_parameters.ecc*n.sin(p.orbital_parameters.omega)), p.orbital_parameters.incl, p.orbital_parameters.spinorbit, [args[0].star.ua, args[0].star.ub], beta0=sigma0, Vsini=args[0].star.vsini, sigma0=CCF_width, zeta=args[0].star.zeta, Rp=p.kr, units='radian')
         if 'CTRS' in RVdatadict: 
-            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
+            output_dict['CTRS'] = (n.ones(len(t_rv), float) * contrast - 
+                                   RVdatadict['CTRS']['offset'])
         if 'FWHM' in RVdatadict: 
-            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if 'BIS' in RVdatadict: 
-            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if 'Vspan' in RVdatadict: 
-            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if 'Wspan' in RVdatadict: 
-            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if 'BiGauss' in RVdatadict: 
-            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if 'Vasy' in RVdatadict: 
-            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
-
-        if 'RV' in RVdatadict: 
-            output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
-        if 'CTRS' in RVdatadict: 
-            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
-        if 'FWHM' in RVdatadict: 
-            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if 'BIS' in RVdatadict: 
-            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if 'Vspan' in RVdatadict: 
-            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if 'Wspan' in RVdatadict: 
-            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if 'BiGauss' in RVdatadict: 
-            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if 'Vasy' in RVdatadict: 
-            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+            output_dict['FWHM'] = (n.ones(len(t_rv), float) * FWHM - 
+                                   RVdatadict['FWHM']['offset'])
+        for obs in observables:
+            if obs in RVdatadict:
+                output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
+                                    RVdatadict[obs]['offset'])
 
     elif all(condFitBin or cond_drift) and \
             not any(condIsoBin) and not any(condFitPlanet):
@@ -552,44 +533,40 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
 
         if 'RV' in RVdatadict: 
             output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
-        if 'CTRS' in RVdatadict: 
-            output_dict['CTRS'] = n.zeros(len(t_rv), float) - RVdatadict['CTRS']['offset']
-        if 'FWHM' in RVdatadict:
-            output_dict['FWHM'] = n.zeros(len(t_rv), float) - RVdatadict['FWHM']['offset']
-        if 'BIS' in RVdatadict:
-            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if 'Vspan' in RVdatadict: 
-            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if 'Wspan' in RVdatadict:
-            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if 'BiGauss' in RVdatadict:
-            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if 'Vasy' in RVdatadict:
-            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+            
+        for obs in observables:
+            if obs in RVdatadict:
+                output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
+                                    RVdatadict[obs]['offset'])
 
+    #TODO: merge with previos condition (yes, we can!)
     elif all(n.array(condFitPlanet) | n.array(cond_drift)):
         for obj in args:
             rv_simu += obj.get_RV(t_rv)
-            if isinstance(obj, ac.FitPlanet) and obj.orbital_parameters.spinorbit is not None:
-                sigma0 = get_FWHM(obj.vsini1, obj.BmV, spectro, output='sigma0')
-                CCF_width = get_FWHM(obj.vsini1, obj.BmV, spectro, output='sigma')
+            
+            # Add RM-effect, only if FitPlanet instance
+            if (isinstance(obj, ac.FitPlanet) and 
+                obj.orbital_parameters.spinorbit is not None):
+                sigma0 = get_FWHM(obj.vsini1, obj.BmV, spectro, 
+                                  output='sigma0')
+                CCF_width = get_FWHM(obj.vsini1, obj.BmV, spectro, 
+                                     output='sigma')
                 rv_simu += Pyarome.arome(obj.get_true_lat(t_rv), obj.ar*(1.-obj.orbital_parameters.ecc**2)/(1.+obj.orbital_parameters.ecc*n.sin(obj.orbital_parameters.omega)), obj.orbital_parameters.incl, obj.orbital_parameters.spinorbit, [obj.ua1, obj.ub1], beta0=sigma0, Vsini=obj.vsini1, sigma0=CCF_width, zeta=obj.zeta1, Rp=obj.kr, units='radians')
+        
         if 'RV' in RVdatadict:
             output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
         if 'CTRS' in RVdatadict:
-            output_dict['CTRS'] = n.ones(len(t_rv), float) * contrast - RVdatadict['CTRS']['offset']
+            output_dict['CTRS'] = (n.ones(len(t_rv), float) * contrast - 
+                                   RVdatadict['CTRS']['offset'])
         if 'FWHM' in RVdatadict:
-            output_dict['FWHM'] = n.ones(len(t_rv), float) * FWHM - RVdatadict['FWHM']['offset']
-        if 'BIS' in RVdatadict:
-            output_dict['BIS'] = n.zeros(len(t_rv), float) - RVdatadict['BIS']['offset']
-        if 'Vspan' in RVdatadict:
-            output_dict['Vspan'] = n.zeros(len(t_rv), float) - RVdatadict['Vspan']['offset']
-        if 'Wspan' in RVdatadict:
-            output_dict['Wspan'] = n.zeros(len(t_rv), float) - RVdatadict['Wspan']['offset']
-        if 'BiGauss' in RVdatadict:
-            output_dict['BiGauss'] = n.zeros(len(t_rv), float) - RVdatadict['BiGauss']['offset']
-        if 'Vasy' in RVdatadict:
-            output_dict['Vasy'] = n.zeros(len(t_rv), float) - RVdatadict['Vasy']['offset']
+            output_dict['FWHM'] = (n.ones(len(t_rv), float) * FWHM - 
+                                   RVdatadict['FWHM']['offset'])
+
+        for obs in observables:
+            if obs in RVdatadict:
+                output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
+                                    RVdatadict[obs]['offset'])
+
 
     else:
         nb_star, FWHM, contrast, flux, rv0 = CCF_prop(t_rv, spectro, mask, *args)
@@ -608,10 +585,10 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
             count+=1
         CCF_star = CCF_sum.copy()
 
-        for i in xrange(len(t_rv)):
+        for i in range(len(t_rv)):
             CCF_sum = CCF_star.copy()
             # Make non-fixed CCFs
-            for o in xrange(count, nb_star) :
+            for o in range(count, nb_star) :
                 CCF[o] = make_CCF(RV_CCF, rv0[o,i], FWHM[o], contrast[o], flux[o])
                 CCF_sum+=CCF[o]
 
@@ -619,7 +596,7 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
 
             # Fit the blended CCF
 
-            if np.any([oo in RVdatadict for oo in observables]):
+            if n.any([oo in RVdatadict for oo in observables]):
                 p0 = [contrast[n.argmax(flux*contrast/100.)], rv0[n.argmax(flux*contrast/100.),i], FWHM[n.argmax(flux*contrast/100.)]/2.3548]
                 flag = 0
                 try:
