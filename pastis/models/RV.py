@@ -466,7 +466,7 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
     observables = ['RV', 'CTRS', 'FWHM', 'BIS', 'Vspan', 'Wspan', 'BiGauss',
                    'Vasy']
 
-    print(RVdatadict)
+    # print(RVdatadict)
     # If any of the observables is in RVdatadict, initialise arrays
     if any([obs in RVdatadict for obs in observables]):
         rv_simu = n.zeros(len(t_rv), float)
@@ -517,7 +517,9 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
         if 'FWHM' in RVdatadict: 
             output_dict['FWHM'] = (n.ones(len(t_rv), float) * FWHM - 
                                    RVdatadict['FWHM']['offset'])
-        for obs in observables:
+            
+        # Set all diagnosis to zero + offset except for RV.
+        for obs in observables[3:]:
             if obs in RVdatadict:
                 output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
                                     RVdatadict[obs]['offset'])
@@ -534,7 +536,8 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
         if 'RV' in RVdatadict: 
             output_dict['RV'] = rv_simu - RVdatadict['RV']['offset']
             
-        for obs in observables:
+        # Set all diagnosis to zero + offset except for RV.
+        for obs in observables[1:]:
             if obs in RVdatadict:
                 output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
                                     RVdatadict[obs]['offset'])
@@ -562,7 +565,8 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
             output_dict['FWHM'] = (n.ones(len(t_rv), float) * FWHM - 
                                    RVdatadict['FWHM']['offset'])
 
-        for obs in observables:
+        # Set all diagnosis to zero + offset except for RV, CTRS, and FWHM.
+        for obs in observables[3:]:
             if obs in RVdatadict:
                 output_dict[obs] = (n.zeros_like(t_rv, dtype=float) - 
                                     RVdatadict[obs]['offset'])
