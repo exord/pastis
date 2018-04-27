@@ -16,12 +16,13 @@ from scipy import stats
 import scipy
 from scipy.stats.distributions import rv_frozen
 import numpy as n
+import traceback
 
 # Intra-package imports
 from .tools import state_constructor, state_deconstructor, get_jitter
 from .priors import compute_priors, prior_constructor
 from . import Objects_MCMC as objMCMC
-import PCA
+from. import PCA
 
 # Imports from upper package level
 # from .. import inputdicts
@@ -162,6 +163,7 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
         except ValueError as verr:
             print('Value Error. Trying new starting point. '
                   'Message: {}'.format(verr))
+            traceback.print_exc()
             pick_random_point(labeldict, priordict)
 
         else:
@@ -211,7 +213,7 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
         if outputfile is not None:
             if (i+1) % Nsave == 0.0:
                 print('Saving preliminary results.')
-                fout = open(outputfile, 'w')
+                fout = open(outputfile, 'wb')
                 vdpre = markov_chain.get_value_dict()
                 for kk in vdpre.keys():
                     vdpre[kk] = vdpre[kk][:i]
@@ -415,6 +417,7 @@ def mcmc(input_dict, datadict, customprior_dict, N, chain=None,
             
         # Any other error, just reject the step.
         except:
+            traceback.print_exc()
             markov_chain.reject_proposal(i, priorx, Lx, logLx, likedictx)
             continue
             
