@@ -8,7 +8,6 @@ from . import limbdarkening
 from . import extinction
 from . import velocimetry
 from . import isochrones
-from . import DataTools
 
 from .extlib import SAMdict, LDdict
 
