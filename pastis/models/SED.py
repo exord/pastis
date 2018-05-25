@@ -18,9 +18,11 @@ def PASTIS_SED(photbands, *args):
 
     compute_global_spectrum(*args)
     mags = []
-    for pb in photbands:
+    mags = [phot.flux2mag(phot.get_flux(global_spectrum, pb), pb) \
+            for pb in photbands]
+#    for pb in photbands:
         #mags[pb] = flux2mag(get_flux(spectra, pb), pb)
-        mags.append(phot.flux2mag(phot.get_flux(global_spectrum, pb), pb))
+#        mags.append(phot.flux2mag(phot.get_flux(global_spectrum, pb), pb))
 
     return mags
 
