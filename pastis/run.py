@@ -73,8 +73,8 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
                     "outfilepart = outfile.replace('.mcmc', '.part.mcmc')\n\n")
                 if profiler:
                     f.write("import cProfile\n\n")
-                    f.write(
-                        "outproffile = outfile.replace('.mcmc','.prof')\n\n")
+                    f.write("outproffile = outfile.replace"
+                            "('.mcmc','.prof')\n\n")
                     f.write(
                         "cProfile.runctx('C = PASTIS_MCMC.mcmc(input_dict, datadict, dd[3], " + str(
                             infodict['Nmcmc']) + ", beta=" + str(
@@ -88,18 +88,23 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
                             infodict['PCA']) + ", Nsave=" + str(infodict[
                                                                       'Nsave']) + ", outputfile=outfilepart)', globals(), locals(),  filename = outproffile)\n\n")
                 else:
-                    f.write(
-                        "C = PASTIS_MCMC.mcmc(input_dict, datadict, dd[3], " + str(
-                            infodict['Nmcmc']) + ", beta=" + str(
-                            beta) + ", Npca=" + str(
-                            infodict['Min_PCA']) + ", NupdatePCA=" + str(
-                            infodict[
-                                'N_update_PCA']) + ", Nlastupdate=" + str(
-                            infodict['Max_PCA']) + ", BIpca=" + str(
-                            infodict['BI_PCA']) + ", randomstart=" + str(
-                            infodict['randomstart']) + ", usePCA=" + str(
-                            infodict['PCA']) + ", Nsave=" + str(infodict[
-                                                                      'Nsave']) + ", outputfile=outfilepart)\n\n")
+                    runparams = {'steps': int(infodict['Nmcmc']),
+                                 'beta': beta,
+                                 'PCAstart': int(infodict['Min_PCA']),
+                                 'PCAupdate': int(infodict['N_update_PCA']),
+                                 'PCAstop': int(infodict['Max_PCA']),
+                                 'BI_PCA': int(infodict['BI_PCA']),
+                                 'randomstart': infodict['randomstart'],
+                                 'usePCA': infodict['PCA'],
+                                 'Nsave': int(infodict['Nsave'])
+                                 }
+                    
+                    f.write("C = PASTIS_MCMC.mcmc(input_dict, datadict, dd[3],"
+                            " {steps:d}, beta={beta}, Npca={PCAstart:d}, "
+                            "NupdatePCA={PCAupdate:d}, Nlastupdate={PCAstop:d}"
+                            ", BIpca={BI_PCA:d}, randomstart={randomstart}, "
+                            "usePCA={usePCA}, Nsave={Nsave:d}, "
+                            "outputfile=outfilepart)\n\n".format(**runparams))
 
             else:
                 if profiler:
@@ -119,17 +124,20 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
                             infodict[
                                 'PCA']) + ")', globals(), locals(),  filename = outproffile)\n\n")
                 else:
-                    f.write(
-                        "C = PASTIS_MCMC.mcmc(input_dict, datadict, dd[3], " + str(
-                            infodict['Nmcmc']) + ", beta = " + str(
-                            beta) + ", Npca = " + str(
-                            infodict['Min_PCA']) + ", NupdatePCA = " + str(
-                            infodict[
-                                'N_update_PCA']) + ", Nlastupdate = " + str(
-                            infodict['Max_PCA']) + ", BIpca = " + str(
-                            infodict['BI_PCA']) + ", randomstart = " + str(
-                            infodict['randomstart']) + ", usePCA = " + str(
-                            infodict['PCA']) + ")\n\n")
+                    runparams = {'steps': int(infodict['Nmcmc']),
+                                 'beta': beta,
+                                 'PCAstart': int(infodict['Min_PCA']),
+                                 'PCAupdate': int(infodict['N_update_PCA']),
+                                 'PCAstop': int(infodict['Max_PCA']),
+                                 'BI_PCA': int(infodict['BI_PCA']),
+                                 'randomstart': infodict['randomstart'],
+                                 'usePCA': infodict['PCA'],
+                                 }
+                    f.write("C = PASTIS_MCMC.mcmc(input_dict, datadict, dd[3],"
+                            " {steps:d}, beta={beta}, Npca={PCAstart:d}, "
+                            "NupdatePCA={PCAupdate:d}, Nlastupdate={PCAstop:d}"
+                            ", BIpca={BI_PCA:d}, randomstart={randomstart}, "
+                            "usePCA={usePCA}\n\n".format(**runparams))
 
             f.write("vd = C.get_value_dict()\n")
             f.write("vd['logL'] = C.get_logL()\n")

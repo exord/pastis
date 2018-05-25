@@ -1,10 +1,7 @@
 import os, sys
 import numpy as n
 import cPickle as pickle
-import scipy
 from scipy import interpolate
-
-import interpolation_tools
 
 def bin_BTsettl_spectra(redfactor = 4.0, node = ''):
     """

@@ -1199,7 +1199,9 @@ class FitBinary(object):
         """
         Return the orbital phase, in the periastron passage definition.
         """
-        t = n.atleast_2d(t)
+        
+        t = n.atleast_1d(t)
+        # FUTURE: compute for series of parameters t = n.atleast_2d(t)
 
         P = self.orbital_parameters.P
         Tp = self.orbital_parameters.Tp
@@ -1224,7 +1226,9 @@ class FitBinary(object):
 
     def get_RV(self, t, isphase=False, component='primary', istransit=True):
 
-        t = n.atleast_1d(t)[:, n.newaxis]
+        t = n.atleast_1d(t) 
+        #FUTURE: perform computation for list of params
+        # t = n.atleast_1d(t)[:, n.newaxis]
 
         # All others, converted to 2-D
         omega = self.orbital_parameters.omega
@@ -1910,7 +1914,10 @@ class Drift(object):
 
     def get_RV(self, t):
 
-        t = n.atleast_1d(t)[:, n.newaxis]
+        t = n.atleast_1d(t)
+        #FUTURE: perform computation for list of params
+        # t = n.atleast_1d(t)[:, n.newaxis]
+
 
         return self.rv0 + self.unitconstant * (
             self.lin * (t - self.TrefRV)/365.25 +

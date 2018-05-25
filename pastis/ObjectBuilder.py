@@ -240,8 +240,7 @@ def ObjectBuilder(dictionary) :
 
     ## Build all objects
     while len(inputdict.keys()) > 0:
-        print('Me trabe')
-
+        
         ## Start construction of Triples
         indTriple = n.array([a.find('Triple') for a in inputdict])
 
@@ -382,4 +381,4 @@ def ObjectBuilder(dictionary) :
         for remain in n.array(list(inputdict.keys()))[ind == -1]:
             inputdict.pop(remain)
 
-    return objects.values()
+    return list(objects.values())
