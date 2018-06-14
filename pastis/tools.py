@@ -141,7 +141,7 @@ def bilinear_interpolation(input_array, indices):
     return output
 
 
-def trueanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8:
+def trueanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8):
 
     E = n.atleast_1d(M)
     Eo = E.copy()
