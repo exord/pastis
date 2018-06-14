@@ -141,17 +141,17 @@ def bilinear_interpolation(input_array, indices):
     return output
 
 
-def trueanomaly(M, ecc, method='Newton', niterationmax=1e4):
-    if not isinstance(M, float):
-        E = M
-    else:
-        E = n.array([M,])
+def trueanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8:
 
-    Eo = M
+    E = n.atleast_1d(M)
+    Eo = E.copy()
+    
     ecc = n.where(ecc > 0.99, 0.99, ecc)
 
     niteration = 0
-    while n.linalg.norm(E - Eo, ord=1) > 1e-5 or niteration==0:
+
+    while n.any(n.abs(E - Eo) > tol/len(E)) or niteration==0:   
+        
         Eo = E
 
         ff = E - ecc*n.sin(E) - M
@@ -174,7 +174,7 @@ def trueanomaly(M, ecc, method='Newton', niterationmax=1e4):
         # Increase iteration number; if above limit, break with exception.
         niteration += 1
         if niteration >= niterationmax:
-            raise RuntimeError('Eccentric anomaly comoputation not converged.')
+            raise RuntimeError('Eccentric anomaly computation not converged.')
         
     # Compute true anomaly
     nu = 2. * n.arctan2(n.sqrt(1. + ecc) * n.sin(E / 2.),
