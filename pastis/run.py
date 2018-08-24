@@ -51,6 +51,8 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
             f.write('import datetime\n')
             f.write('import pickle\n')
             f.write('import %s as PASTIS\n' % pastisversion)
+            f.write('from {}.DataTools import readdata'
+                    '\n'.format(pastisversion))
             #f.write('from numpy import *\n')
             f.write('time.sleep(10*' + str(
                 c) + ')\n')  # to avoid file access problems in the cluster
@@ -62,7 +64,7 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
             f.write("f = open('" + pastisfile + "', 'rb')\n")
             f.write("dd = pickle.load(f)\n")
             f.write("f.close()\n\n")
-            f.write("datadict, lc = PASTIS.DataTools.readdata(dd[2])\n\n")
+            f.write("datadict, lc = readdata(dd[2])\n\n")
             f.write("input_dict = dd[1].copy()\n\n")
             f.write("PASTIS.initialize(dd[0], datadict, input_dict)\n\n")
             f.write("from %s.MCMC import PASTIS_MCMC\n" % pastisversion)
