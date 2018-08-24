@@ -1,4 +1,6 @@
-from ..AstroClasses import *
+import numpy as np
+
+from ..AstroClasses import Star, IsoBinary, PlanSys, Triple
 from .. import photometry as phot
 from ..exceptions import GlobalSpectrumError
 
@@ -57,7 +59,7 @@ def compute_global_spectrum(*args):
     global global_spectrum
     global_spectrum = spectra
 
-    if n.max(global_spectrum) == 0:
+    if np.max(global_spectrum) == 0:
         raise GlobalSpectrumError('Global Spectrum is zero!')
 
     return 

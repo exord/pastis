@@ -12,7 +12,7 @@ from . import isochrones
 from .extlib import SAMdict, LDdict
 
 # Define current version and print
-__version__ = 'PASTIS_NM'
+__version__ = 'PASTIS'
 version = __version__
 
 hostname = os.getenv('HOSTNAME')

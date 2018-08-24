@@ -1924,6 +1924,6 @@ class Drift(object):
             self.quad * (t - self.TrefRV)**2 / 365.25**2 +
             self.cub * (t - self.TrefRV)**3 / 365.25**3)
 
-__all__ = ['Target', 'Blend', 'PlanetHost', 'WhiteDwarf', 'Triple',
+__all__ = ['Star', 'Target', 'Blend', 'PlanetHost', 'WhiteDwarf', 'Triple',
            'Planet', 'PlanSys', 'FitBinary', 'IsoBinary', 'qBinary', 
            'FitPlanet', 'Drift']
