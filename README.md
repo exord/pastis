@@ -10,6 +10,11 @@
 ### External models
 External models are used for the stellar atmospheres, evolution tracks, limb darkening parameters, and interstellar extinction. Besides, a library of photmetric filters are necessary to run PASTIS. All these files are provided as part of the repository in the external_models folder.
 
+To unpack the library, use ``tar``
+```
+tar -xzvf pastislib.tgz
+```
+
 ### JKTEBOP
 ``PASTIS`` relies on some subroutines from the ``JKTEBOP`` package by Southworth [ADD LINK].
 To make them available to ``PASTIS``, an extension module must be built using ``f2py``:
