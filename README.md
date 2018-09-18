@@ -10,6 +10,7 @@
 ### External models
 External models are used for the stellar atmospheres, evolution tracks, limb darkening parameters, and interstellar extinction. Besides, a library of photmetric filters are necessary to run PASTIS. All these files are provided as part of the repository in the external_models folder.
 
+THIS IS NOT WORKING YET
 To unpack the library, use ``tar``
 ```
 tar -xzvf pastislib.tgz
@@ -26,7 +27,13 @@ If you are running python3, this should be
 ```
 f2py3 -c task2_v28_components.f -m task2_components3
 ```
-  
+
+In MacOS, you will probably need the command line tools, if they are not installed yet. To do this, run from a terminal:
+```
+xcode-select --install
+```
+and follow the instructions.
+
 The resulting file, ``task2_components.so`` must be located in the directory ``$PASTISLIB/fortran``, which is included in the ``sys.path`` variable at startup.
 The original fortran file is found in the ``external_models/fortran`` directory.
 
