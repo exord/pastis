@@ -33,6 +33,7 @@ In MacOS, you will probably need the command line tools, if they are not install
 xcode-select --install
 ```
 and follow the instructions.
+You also need the ```Python.h''' header file.
 
 The resulting file, ``task2_components.so`` must be located in the directory ``$PASTISLIB/fortran``, which is included in the ``sys.path`` variable at startup.
 The original fortran file is found in the ``external_models/fortran`` directory.
