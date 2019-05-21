@@ -131,16 +131,17 @@ class Star(object):
     def get_parent(self):
         return self._parent
 
-    def get_spectrum(self):
+    def get_spectrum(self, force=True):
         """
         Get the spectrum of the star
 
         Needs global variable: CKspectra, CKz, CKteff, CKlogg
         """
-        try:
-            return self.spectrum
-        except AttributeError:
-            pass
+        if not force:
+            try:
+                return self.spectrum
+            except AttributeError:
+                pass
 
         teff = self.teff
         logg = self.logg
