@@ -916,7 +916,7 @@ def get_best_values(C, BI=0.0, bestparam='posterior'):
         N = len(vd[vd.keys()[0]])
         y = vd[bestparam]
 
-    indi = n.round(BI * N)
+    indi = n.int(n.round(BI * N))
     indmax = n.argmax(y[indi:])
 
     for key in vd.keys():
