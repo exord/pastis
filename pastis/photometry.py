@@ -203,7 +203,7 @@ def read_WD_spectra():
     Flux units are in erg/s/cm^2/A.
     """
     # Read spectra from file
-    f = open(os.path.join(libpath, 'AM', 'WD', 'WDspec.pickle'))
+    f = open(os.path.join(libpath, 'AM', 'WD', 'WDspec.pickle'), 'rb')
 
     global WDteff, WDlogg
     WDww, WDteff, WDlogg, WDspectra = pickle.load(f)
