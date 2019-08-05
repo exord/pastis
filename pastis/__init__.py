@@ -132,11 +132,11 @@ def initialize(*args):
         pbands_limbdarkening = ['Kepler', 'CoRoT-W']
         photometry.initialize_phot(pbands, zeromagfile, filterpath,
                                    AMmodel=SAMdict['BT-settl'])
-        photometry.initialize_phot_WD()
+        #photometry.initialize_phot_WD()
 
         isochrones.interpol_tracks(EMdict['Dartmouth'])
         isochrones.prepare_tracks_target(EMdict['Dartmouth'])
-        isochrones.interpol_WD(os.path.join(libpath, 'AM', 'WD', 'Table_DA'))
+        #isochrones.interpol_WD(os.path.join(libpath, 'AM', 'WD', 'Table_DA'))
 
         limbdarkening.initialize_limbdarkening(pbands_limbdarkening,
                                                ATMmodel='A',
