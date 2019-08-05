@@ -170,7 +170,8 @@ def make_plansys(objname, dd, imposeobj = None):
     planets = []
     for planet in dd.keys():
 
-        if planet == 'star1' : continue
+        if planet == 'star1':
+            continue
 
         ddp = {}
         for key in inputdict[dd[planet]].keys():
