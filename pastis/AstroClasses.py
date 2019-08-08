@@ -127,7 +127,26 @@ class Star(object):
             self.dist = 0.001
 
         self._parent = None
-
+        
+        # Check that critical parameters were provided
+        missing = []
+        for critical, name in zip(['teff', 'z'], ['Effective temperature',
+                                  'Metallicity']):
+            # Get value of critical parameter        
+            x = getattr(self, critical)
+                    
+            # If not defined add to missing list
+            if x is None:
+                missing.append([critical, name])
+               
+        # If any critical parameter is missing, print info and exit.
+        if len(missing) != 0:
+            s = ['{} ({}) not provided'.format(nam, cri) for 
+                 cri, nam in missing]
+                        
+            raise ValueError('Undefined critical arguments\n '
+                             ''+str.join('\n ', s))
+        
     def get_parent(self):
         return self._parent
 
@@ -327,6 +346,9 @@ class Target(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
 
+        assert self.logg is not None, ('Surface gravity (logg) '
+                                       'not provided.')
+
         # Get parameters from tracks
         self.get_stellarparameters()
 
@@ -354,6 +376,9 @@ class Target(Star):
 class Blend(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
+
+        assert self.minit is not None, ('Initial mass (minit) '
+                                        'not provided.')
 
         # Get parameters from tracks
         self.get_stellarparameters()
@@ -385,6 +410,9 @@ class PlanetHost(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
 
+        assert self.dens is not None, ('Mean stellar density (dens) '
+                                       'not provided.')
+        
         # Get parameters from tracks
         self.get_stellarparameters()
 
