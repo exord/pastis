@@ -1760,6 +1760,9 @@ class FitPlanet(FitBinary):
         self.ub2 = kwargs.pop('ub2', 0.0)
         self.ua2 = kwargs.pop('ua2', 0.0)
         self.albedo1 = kwargs.pop('albedo1', 0.4)
+        
+        # By default, set self.q to zero
+        self.q = kwargs.pop('q', 0.0)
 
 
 class orbital_parameters(object):
