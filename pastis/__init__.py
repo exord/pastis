@@ -16,6 +16,10 @@ __version__ = 'PASTIS'
 version = __version__
 
 hostname = os.getenv('HOSTNAME')
+if hostname is None:
+    import socket
+    hostname = socket.gethostname()
+    
 print('Running {} on {}'.format(version, hostname))
 
 # List of Classes and parameters
