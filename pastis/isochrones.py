@@ -67,7 +67,7 @@ def interpol_tracks(input_file):
                 Y[(mm, zz)].append(yi)
 
     global verticesY
-    verticesY = n.array(Y.keys())
+    verticesY = n.array(list(Y.keys()))
     
     print('... DONE! \n')
     return
