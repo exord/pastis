@@ -128,10 +128,13 @@ class Star(object):
 
         self._parent = None
         
-        # Check that critical parameters were provided
+        # Check that critical parameter z was provided
+        self.test_critical(['z'], ['Metallicity'])
+       
+    def test_critical(self, attrs, names):
+        
         missing = []
-        for critical, name in zip(['teff', 'z'], ['Effective temperature',
-                                  'Metallicity']):
+        for critical, name in zip(attrs, names):
             # Get value of critical parameter        
             x = getattr(self, critical)
                     
@@ -146,7 +149,9 @@ class Star(object):
                         
             raise ValueError('Undefined critical arguments\n '
                              ''+str.join('\n ', s))
-        
+            
+        return
+            
     def get_parent(self):
         return self._parent
 
@@ -346,8 +351,8 @@ class Target(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
 
-        assert self.logg is not None, ('Surface gravity (logg) '
-                                       'not provided.')
+        self.test_critical(['teff', 'logg'], ['Effective temperature',
+                                              'Surface gravity'])
 
         # Get parameters from tracks
         self.get_stellarparameters()
@@ -376,10 +381,10 @@ class Target(Star):
 class Blend(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
-
-        assert self.minit is not None, ('Initial mass (minit) '
-                                        'not provided.')
-
+        
+        self.test_critical(['minit', 'logage'], ['Effective temperature', 
+                                                 'Age'])
+            
         # Get parameters from tracks
         self.get_stellarparameters()
 
@@ -410,8 +415,8 @@ class PlanetHost(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
 
-        assert self.dens is not None, ('Mean stellar density (dens) '
-                                       'not provided.')
+        self.test_critical(['teff', 'dens'], ['Effective temperature',
+                                              'Mean stellar density'])
         
         # Get parameters from tracks
         self.get_stellarparameters()
@@ -443,6 +448,9 @@ class WhiteDwarf(Star):
     def __init__(self, **kwargs):
 
         Star.__init__(self, **kwargs)
+
+        self.test_critical(['teff', 'logg'], ['Effective temperature',
+                                              'Surface gravity'])
 
         self.mact = iso.get_WD_mass(self.teff, self.logg)
         self.logage = iso.get_WD_logage(self.teff, self.logg)
