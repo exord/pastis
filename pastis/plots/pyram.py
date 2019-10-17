@@ -58,9 +58,9 @@ def pyramid(C, BI=0.0, Nlast=None, sample=1, label=None, filename=None):
                     xtl.set_rotation(90)
                     xtl.set_fontsize(11)
 
-		# Modify key
-		key2 = key2[key2.find('_'):]
-                ax.set_xlabel(key2, fontsize = 10)
+            # Modify key
+            key2 = key2[key2.find('_'):]
+            ax.set_xlabel(key2, fontsize = 10)
 
             if j != 0:
                 ax.yaxis.set_major_formatter(p.NullFormatter())
@@ -93,7 +93,7 @@ def pyramid(C, BI=0.0, Nlast=None, sample=1, label=None, filename=None):
     return 
 
 
-def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
+def pyramid_cont(C, bi=None, nlast=None, sample=1, filename=None,
                  **kwargs):
     """
     Plot the correlation diagram (a.k.a. the pyramid) for all parameters
@@ -103,14 +103,14 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
     ----------
     C: dict, VDchain instance, or Chain instance
         The chain for which the pyramid plot will be done. The actual Chain
-	instance or a dictionnary containing the values of the paremeters can
-	be given.
+    instance or a dictionnary containing the values of the paremeters can
+    be given.
 
-    BI: float
-        The fraction of the chain to be discarded from the plot. This is used
+    bi: float or None
+        The burnin (in number of steps) to discard from the plot. This is used
         if the traces contain the burn-in period.
 
-    Nlast: int, optional
+    nlast: int or None, optional
         Last element of the trace to be used for the plot. If not given, all
         the chain (potentially after the burn-in period) will be used.
 
@@ -175,7 +175,7 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
     fontsize = kwargs.pop('fontsize', 11)
     labelfontsize = kwargs.pop('labelfontsize', 10)    
     objectlabel = kwargs.pop('objectlabel', True)    
-    colorlist = kwargs.pop('colorlist', None) #('0.85', '0.65', '0.45'))
+    colorlist = kwargs.pop('colorlist', ('0.85', '0.65', '0.45'))
     cmap = kwargs.pop('cmap', None)
     interpolation = kwargs.pop('interpolation', 'none')
     confidence_levels = kwargs.pop('confidence_levels',
@@ -206,16 +206,15 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
     else:
         vd = C.get_value_dict()
 
-    nBI = n.int(n.round(len(vd.values()[0])*BI, 0))
-    if Nlast != None:
-        nf = Nlast
-    else:
-        nf = len(vd.values()[0])+1
+    # Check argument types
+    assert (type(bi) is int) or (bi is None), "bi must be an integer or None"
+    assert (type(nlast) is int) or (nlast is None), ("nlast must be an integer"
+                                                      " or None")
     
     Nvar = len(vd.keys())
 
     fig.subplots_adjust(bottom= 0.15, left = 0.15, top=0.9, right=0.9,
-			hspace = 0.0, wspace = 0.0)
+            hspace = 0.0, wspace = 0.0)
 
     axs = []
 
@@ -223,8 +222,8 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
         keys1 = n.sort(vd.keys())[:-1]
         keys2 = n.sort(vd.keys())[1:]
     else:
-        keys2 = n.sort(vd.keys())[:-1]
-        keys1 = n.sort(vd.keys())[1:]
+        keys2 = n.sort(list(vd.keys()))[:-1]
+        keys1 = n.sort(list(vd.keys()))[1:]
         
     for i, key1 in enumerate(keys1):
         for j, key2 in enumerate(keys2):
@@ -233,8 +232,8 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
             axs.append(ax)
 
             #ax.plot(vd[key2][nBI: nf: sample], vd[key1][nBI: nf: sample], 'k,')
-            H, xedges, yedges = n.histogram2d(vd[key2][nBI: nf: sample],
-                                              vd[key1][nBI: nf: sample],
+            H, xedges, yedges = n.histogram2d(vd[key2][bi: nlast: sample],
+                                              vd[key1][bi: nlast: sample],
                                               bins = (nbins, nbins),
                                               normed = False)
 
@@ -260,9 +259,9 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
             """
             
             """
-	    ax.contourf(xedges[1:], yedges[1:],
+        ax.contourf(xedges[1:], yedges[1:],
                         H.T, lims, colors = colorlist[::-1])
-	    """
+        """
             # Mark value
             if mapdict is not None and key2 in mapdict:
                 ax.axvline(mapdict[key2], **mapfmt)
@@ -278,7 +277,7 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
 
             if i != len(vd.keys())-2:
                 ax.xaxis.set_major_formatter(p.NullFormatter())
-		ax.xaxis.set_ticks_position('none')
+                ax.xaxis.set_ticks_position('none')
             else:
                 ## Trick to get nice ticklabels
                 s = '%e'%dxl
@@ -292,7 +291,7 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
                                                                       ndecimal)
                                                               )
                                              )
-		ax.xaxis.set_ticks_position('bottom')
+                ax.xaxis.set_ticks_position('bottom')
 
                 
                 for xtl in ax.get_xticklabels():
@@ -310,17 +309,17 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
                 else:
                     objk = key2[:key2.find('_') - 1]
                     if not objk in Allpbands:
-                        print objk
+                        print(objk)
                         # Modify key
                         key2m = key2[key2.find('_')+1:]#.title()
                     else:
                         key2m = key2.replace('_', '\n')
 
-		ax.set_xlabel(key2m, fontsize = labelfontsize)
+                ax.set_xlabel(key2m, fontsize = labelfontsize)
 
             if j != 0:
                 ax.yaxis.set_major_formatter(p.NullFormatter())
-		ax.yaxis.set_ticks_position('none')
+                ax.yaxis.set_ticks_position('none')
             else:
                 # Trick to get nice ticklabels
                 s = '%e'%dyl
@@ -330,9 +329,8 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
                 else:
                     ndecimal = 1
                 
-
                 ax.yaxis.set_major_formatter(p.FixedFormatter(n.round(yts[1:], ndecimal)))
-		ax.yaxis.set_ticks_position('left')
+                ax.yaxis.set_ticks_position('left')
                 for ytl in ax.get_yticklabels():
                     ytl.set_fontsize(fontsize)
                     
@@ -353,44 +351,45 @@ def pyramid_cont(C, BI = 0.0, Nlast = None, sample = 1, filename = None,
                 ax.set_ylabel(key1m, fontsize = labelfontsize)
 
 
-	    ### Add plot of histogram above top panels
-	    if addhists:
-		if i == j:
-		    axpos = ax.get_position().get_points()
-		    width = axpos[1, 0] - axpos[0, 0]
-		    height = axpos[1, 1] - axpos[0, 1]
-		    axh = fig.add_axes((axpos[0, 0], axpos[1, 1], width,
-					height/2)
-					)
+            ### Add plot of histogram above top panels
+            if addhists:
+                if i == j:
+                    axpos = ax.get_position().get_points()
+                    width = axpos[1, 0] - axpos[0, 0]
+                    height = axpos[1, 1] - axpos[0, 1]
+                    axh = fig.add_axes((axpos[0, 0], axpos[1, 1], width,
+                    height/2)
+                    )
 
-		    axh.hist(vd[key2][nBI: nf: sample], nbins,
-                             histtype = 'step', color = 'k')
-                        
+                    axh.hist(vd[key2][bi: nlast: sample], nbins,
+                                     histtype = 'step', color = 'k')
+                            
                     axh.set_xlim(xl)
-		    axh.xaxis.set_ticks_position('bottom')
-		    axh.yaxis.set_ticks_position('none')
-		    axh.xaxis.set_major_formatter(p.NullFormatter())
-		    axh.yaxis.set_major_formatter(p.NullFormatter())
-		    axh.xaxis.set_major_locator(p.FixedLocator(xts[1:]))
-		    
+                    axh.xaxis.set_ticks_position('bottom')
+                    axh.yaxis.set_ticks_position('none')
+                    axh.xaxis.set_major_formatter(p.NullFormatter())
+                    axh.yaxis.set_major_formatter(p.NullFormatter())
+                    axh.xaxis.set_major_locator(p.FixedLocator(xts[1:]))
+    
                     if mapdict is not None and key2 in mapdict:
                         axh.axvline(mapdict[key2], **mapfmt)
 
-                    if i == len(vd.keys())-2: #Last row
-			axh2 = fig.add_axes((axpos[1, 0], axpos[0, 1], width/2,
-					    height)
-			    )
-			axh2.hist(vd[key1][nBI: nf: sample], nbins, histtype = 'step',
-				  color = 'k', orientation = 'horizontal')
-			axh2.set_ylim(yl)
-			axh2.xaxis.set_ticks_position('none')
-			axh2.yaxis.set_ticks_position('left')
-			axh2.xaxis.set_major_formatter(p.NullFormatter())
-			axh2.yaxis.set_major_formatter(p.NullFormatter())
-			axh2.yaxis.set_major_locator(p.FixedLocator(yts[1:]))
+                if i == len(vd.keys())-2: #Last row
+                    axh2 = fig.add_axes((axpos[1, 0], axpos[0, 1], width/2,
+                                         height))
 
-                        if mapdict is not None and key1 in mapdict:
-                            axh2.axhline(mapdict[key1], **mapfmt)
+                    axh2.hist(vd[key1][bi: nlast: sample], nbins, 
+                              histtype='step', color='k', 
+                              orientation='horizontal')
+                    axh2.set_ylim(yl)
+                    axh2.xaxis.set_ticks_position('none')
+                    axh2.yaxis.set_ticks_position('left')
+                    axh2.xaxis.set_major_formatter(p.NullFormatter())
+                    axh2.yaxis.set_major_formatter(p.NullFormatter())
+                    axh2.yaxis.set_major_locator(p.FixedLocator(yts[1:]))
+
+                    if mapdict is not None and key1 in mapdict:
+                        axh2.axhline(mapdict[key1], **mapfmt)
 
     #labeltext = label+'\nNiteration = %d;\nBurnIn = %d%%'%(nf -1, BI*100)
     labeltext = label
