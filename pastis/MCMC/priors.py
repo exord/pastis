@@ -2,6 +2,7 @@
 Module with functions concerning Priors
 """
 import numpy as n
+import warnings
 from math import *
 from scipy import stats, interpolate
 
@@ -355,32 +356,60 @@ def prior_constructor(input_dict, customprior_dict):
 
         # Iteration over all parameters of a given object
         for parkey in input_dict[objkey]:
+            
+            family = [objkey, parkey]
 
             if parkey == 'object':
                 continue
 
             parlist = input_dict[objkey][parkey]
-
-            if not isinstance(parlist, list):
-                continue
-
-            # If parameter does not jump, skip this element
-            if parlist[1] == 0:
-                continue
-
-            # Construct prior instance with information on dictionary
-            priortype = parlist[2]
-            pars = parlist[3:]
-            try:
-                nparams = distdict[priortype][1] 
-                prior = distdict[priortype][0](*pars[:nparams])
-            except KeyError:
-                raise PriorError('Parameter {}_{}: Unknown type '
-                                 'of prior.'.format(objkey, parkey))
-
-            # prior = build_prior_instance(priortype, *pars, parname = parkey)
             
-            priordict[objkey+'_'+parkey] = prior
+            # If simple parameter, proceed as usual.
+            if isinstance(parlist, list):
+                # If parameter does not jump, skip this element
+                if parlist[1] == 0:
+                    continue
+                
+                try:
+                    prior = build_prior_instance(parlist)
+                except KeyError:
+                    raise PriorError('Parameter {}_{}: Unknown type '
+                     'of prior.'.format(objkey, parkey))
+                
+                parname = '_'.join(family)
+                
+                priordict[parname] = prior
+
+
+            # Create this for nested parameters (like LDC for different 
+            # bandpasses)
+            elif isinstance(parlist, dict):
+                                
+                for photband in parlist:
+
+                    # Set previous level as parent
+                    familytree = family.copy()
+                    familytree.append(photband)
+                    
+                    # Define name
+                    parname = '_'.join(familytree)
+                
+                    # Get parlist for this photband, and assign name
+                    #ldclist = parlist[photband].copy()
+                                        
+                    try:
+                        prior = build_prior_instance(parlist[photband])
+                    except KeyError:
+                        raise PriorError('Parameter {}_{}: Unknown type '
+                                         'of prior.'.format(objkey, parkey))
+                
+                    priordict[parname] = prior
+            
+            else:
+                warnings.warn('Parameter {} does not have a correct '
+                              'definition.'.format('_'.join(family)))
+                
+            
 
     # Iteration over all custom priors
     for ii, key in enumerate(customprior_dict):
@@ -416,6 +445,17 @@ def prior_constructor(input_dict, customprior_dict):
     return priordict
 
 
+def build_prior_instance(parlist):
+    # Construct prior instance with information on dictionary
+    priortype = parlist[2]
+    pars = parlist[3:]
+
+    nparams = distdict[priortype][1] 
+    prior = distdict[priortype][0](*pars[:nparams])
+
+    return prior
+
+    
 def compute_priors(priordict, labeldict):
     """
     Compute prior probability of a given chain step.
@@ -435,6 +475,8 @@ def compute_priors(priordict, labeldict):
     # Construct dictionary to hold prior probabilities
     priorprob = dict((i, 1.0) for i in priordict.keys())
     
+    #TODO Be careful, if for some reason some parameter is missing from 
+    # priodict, this will fail silently.
     for key in priordict.keys():
         # If prior is a function of many parameters,
         if key.startswith('prior'):

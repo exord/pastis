@@ -17,7 +17,7 @@ from math import log10, log
 
 # PARAMETER
 class Parameter(object):
-    def __init__(self, value, object, jump=True, label=None,
+    def __init__(self, value, object, jump=True, label=None, family=[],
                  proposal_function='gaussian', proposal_scale=None):
 
         self._value = value
@@ -26,6 +26,7 @@ class Parameter(object):
 
         self.jump = jump
         self.label = label  # A name to identify object
+        self.family = family # Potential list of parameter dependeces
 
         # If jump parameter, at initialization, set some mandatory (and
         # dynamic!) attributes
