@@ -320,31 +320,32 @@ class Star(object):
         Compute spots model using macula
         https://www.cfa.harvard.edu/~dkipping/macula.html
         """
-        if spotmodel == 'Macula':
-            if self.Nspots != 0:
-                star = n.array(
-                    [self.rotangle * n.pi / 180.0, self.period, self.kappa2,
-                     self.kappa4, self.c1, self.c2, self.c3, self.c4, self.d1,
-                     self.d2, self.d3, self.d4])
-                inst = n.array([[1.0], [1.0]])
-                spot = n.array([n.zeros(self.Nspots)] * 8)
-                for i in range(self.Nspots):
-                    for j, spotparam in enumerate(
-                            ['lambda0', 'phi0', 'alphamax', 'fspot', 'tmax',
-                             'life', 'ingress', 'egress']):
-                        spot[j][i] = self.__getattribute__(
-                            'spot' + str(i) + spotparam)
-                        if spotparam == 'lambda0' or spotparam == 'phi0' or \
-                                        spotparam == 'alphamax':
-                            spot[j][i] = spot[j][i] * n.pi / 180.0
-                            # longitud, latitud and spot size in radians
+        if spotmodel == 'Macula' and self.Nspots > 0:
 
-                lcspots = macula(t, star, spot, inst)
+            star = n.array(
+                [self.rotangle * n.pi / 180.0, self.period, self.kappa2,
+                 self.kappa4, self.c1, self.c2, self.c3, self.c4, self.d1,
+                 self.d2, self.d3, self.d4])
+            inst = n.array([[1.0], [1.0]])
+            spot = n.array([n.zeros(self.Nspots)] * 8)
+            for i in range(self.Nspots):
+                for j, spotparam in enumerate(
+                        ['lambda0', 'phi0', 'alphamax', 'fspot', 'tmax',
+                         'life', 'ingress', 'egress']):
+                    spot[j][i] = self.__getattribute__(
+                        'spot' + str(i) + spotparam)
+                    if spotparam == 'lambda0' or spotparam == 'phi0' or \
+                                    spotparam == 'alphamax':
+                        spot[j][i] = spot[j][i] * n.pi / 180.0
+                        # longitud, latitud and spot size in radians
 
-                return lcspots
+            lcspots = macula(t, star, spot, inst)
 
-            else:
-                return n.ones(len(t))
+            return lcspots
+
+        else:
+            return n.ones(len(t))
+
 
 
 class Target(Star):
@@ -1329,7 +1330,8 @@ class FitBinary(object):
                         'Invalid limbdarkening for photband %s' % photband)
 
             except KeyError:
-                raise KeyError('No limbdarkening for photband %s' % photband)
+                raise KeyError('No limbdarkening provided for photband '
+                               '%s' % photband)
 
         else:
             raise TypeError('Invalid limbdarkening for photband %s' % photband)
@@ -1452,45 +1454,48 @@ class FitBinary(object):
         """
         get spots of one of the binary components
         """
-        if spotmodel == 'Macula':
-            if component == 'primary':
-                comp = 'comp1'
-            elif component == 'secondary':
-                comp = 'comp2'
+        if component == 'primary':
+            comp = 'comp1'
+        elif component == 'secondary':
+            comp = 'comp2'
+        else:
+            raise NameError('Component not correctly specified.')
 
-            if self.__getattribute__(comp + 'Nspots') != 0:
-                star = n.array(
-                    [(self.__getattribute__(comp + 'rotangle')) * n.pi / 180.0,
-                     self.__getattribute__(comp + 'period'),
-                     self.__getattribute__(comp + 'kappa2'),
-                     self.__getattribute__(comp + 'kappa4'),
-                     self.__getattribute__(comp + 'c1'),
-                     self.__getattribute__(comp + 'c2'),
-                     self.__getattribute__(comp + 'c3'),
-                     self.__getattribute__(comp + 'c4'),
-                     self.__getattribute__(comp + 'd1'),
-                     self.__getattribute__(comp + 'd2'),
-                     self.__getattribute__(comp + 'd3'),
-                     self.__getattribute__(comp + 'd4')])
-                inst = n.array([[1.0], [1.0]])
-                spot = n.array(
-                    [n.zeros(self.__getattribute__(comp + 'Nspots'))] * 8)
-                for i in range(self.__getattribute__(comp + 'Nspots')):
-                    for j, spotparam in enumerate(
-                            ['lambda0', 'phi0', 'alphamax', 'fspot', 'tmax',
-                             'life', 'ingress', 'egress']):
-                        spot[j][i] = self.__getattribute__(
-                            comp + 'spot' + str(i) + spotparam)
-                        if spotparam == 'lambda0' or spotparam == 'phi0' or \
-                                spotparam == 'alphamax':
-                            spot[j][i] = spot[j][i] * n.pi / 180.0  # longitud,
-                                             # latitud and spot size in radians
+        if (spotmodel == 'Macula' and 
+            self.__getattribute__(comp + 'Nspots') != 0):
 
-                lcspots = macula(t, star, spot, inst)
-                return lcspots
+            star = n.array(
+                [(self.__getattribute__(comp + 'rotangle')) * n.pi / 180.0,
+                 self.__getattribute__(comp + 'period'),
+                 self.__getattribute__(comp + 'kappa2'),
+                 self.__getattribute__(comp + 'kappa4'),
+                 self.__getattribute__(comp + 'c1'),
+                 self.__getattribute__(comp + 'c2'),
+                 self.__getattribute__(comp + 'c3'),
+                 self.__getattribute__(comp + 'c4'),
+                 self.__getattribute__(comp + 'd1'),
+                 self.__getattribute__(comp + 'd2'),
+                 self.__getattribute__(comp + 'd3'),
+                 self.__getattribute__(comp + 'd4')])
+            inst = n.array([[1.0], [1.0]])
+            spot = n.array(
+                [n.zeros(self.__getattribute__(comp + 'Nspots'))] * 8)
+            for i in range(self.__getattribute__(comp + 'Nspots')):
+                for j, spotparam in enumerate(
+                        ['lambda0', 'phi0', 'alphamax', 'fspot', 'tmax',
+                         'life', 'ingress', 'egress']):
+                    spot[j][i] = self.__getattribute__(
+                        comp + 'spot' + str(i) + spotparam)
+                    if spotparam == 'lambda0' or spotparam == 'phi0' or \
+                            spotparam == 'alphamax':
+                        spot[j][i] = spot[j][i] * n.pi / 180.0  # longitud,
+                                         # latitud and spot size in radians
 
-            else:
-                return n.ones(len(t))
+            lcspots = macula(t, star, spot, inst)
+            return lcspots
+
+        else:
+            return n.ones(len(t))
 
     def get_LC(self, t, photband='Kepler', isphase=False):
         # FitBinary

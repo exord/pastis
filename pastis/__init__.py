@@ -113,9 +113,9 @@ PriorTypeList = ['Normal', 'TruncatedUNormal', 'TruncatedJNormal', 'Binormal',
                  'LogBinormal', 'File']
 
 beaming = False
+spotmodel = None
 Nmax = None
 TrefRV = 0.0
-spotmodel = 'Macula'
 checkblendmag = False
 
 ###
@@ -151,7 +151,7 @@ def initialize(*args):
         beaming = False
         Nmax = None
         TrefRV = 0.0
-        spotmodel = 'Macula'
+        spotmodel = None
         checkblendmag = False
         
         return
@@ -184,7 +184,7 @@ def initialize(*args):
     try:
         spotmodel = infodict['spotmodel']
     except KeyError:
-        spotmodel = 'Macula'
+        spotmodel = None
 
     #HARD CODED magnitude LIMITATION TO BLENDS 
     try:
