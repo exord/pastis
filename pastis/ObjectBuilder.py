@@ -64,14 +64,20 @@ def make_binary(objname, dd, imposeobj = None):
     if not 'orbital_parameters' in dd.keys():
         ddop = {}
         for key in dd.keys():
-            ddop[key] = dd[key][0]
+            if not isinstance(dd[key], dict):
+                ddop[key] = dd[key][0]
         #dd['orbital_parameters'] = orbital_parameters(**ddop)
         orbit = ac.orbital_parameters(**ddop)
 
     if 'FitBinary' in objname or 'FitPlanet' in objname:
         ddbin = {}
         for key in inputdict[objname].keys():
-            ddbin[key] = inputdict[objname][key][0]
+            if not isinstance(inputdict[objname][key], dict):
+                ddbin[key] = inputdict[objname][key][0]
+            else:
+                ddbin[key] = dict((photband, 
+                                   inputdict[objname][key][photband][0]) for
+                                   photband in inputdict[objname][key])
         ddbin['orbital_parameters'] = orbit
 
         if 'FitBinary' in objname:
