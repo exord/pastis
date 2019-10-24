@@ -1,4 +1,5 @@
 import sys
+import warnings
 import numpy as n
 from scipy import interpolate
 
@@ -97,7 +98,14 @@ def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
         sys.stdout.flush()
 
         ##
-        cond2 = n.logical_and(cond1, band == trad_to_claret[photband])
+        try:
+            cond2 = n.logical_and(cond1, band == trad_to_claret[photband])
+        except KeyError:
+            warnings.warn('Warning! Photband {} could not be initialised. '
+                          'Should be ok if you plan to fit the limb darkening'
+                          ' coefficients'.format(photband))
+            continue
+                
 
         loggc = n.compress(cond2, logg)
         teffc = n.compress(cond2, Teff)

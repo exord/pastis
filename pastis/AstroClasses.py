@@ -1552,27 +1552,27 @@ class FitBinary(object):
         r1 = self.sumr / (1 + self.kr)
         r2 = r1 * self.kr
 
-        v[18 - 1] = n.double(1.0)  # Integ. ring size (deg)
+        v[1 - 1] = n.double(sbr)  # Surface brightness ratio
         v[2 - 1] = n.double(self.sumr)  # Sum of the radii (normalised to sma)
         v[3 - 1] = n.double(self.kr)  # Ratio of the radii
+        v[4 - 1] = n.double(ldc1[0])  # LD star A (linear coeff)
+        v[5 - 1] = n.double(ldc2[0])  # LD star B (linear coeff)
         v[6 - 1] = n.double(incl * 180.0 / pi)  # Orbital inclination (deg)
-        v[13 - 1] = n.double(self.q)  # Mass ratio of system
         v[7 - 1] = n.double(ecc * n.cos(omega))  # e #ecos(omega) OR ecentricity
         v[8 - 1] = n.double(ecc * n.sin(omega))  # omega  #e sin(omega) OR omega
         v[9 - 1] = n.double(gd1)  # Gravity darkening (star A)
         v[10 - 1] = n.double(gd2)  # Grav darkening (star B)
-        v[1 - 1] = n.double(sbr)  # Surface brightness ratio
-        v[15 - 1] = n.double(0.0)  # Amount of third light
-        v[4 - 1] = n.double(ldc1[0])  # LD star A (linear coeff)
-        v[5 - 1] = n.double(ldc2[0])  # LD star B (linear coeff)
-        v[21 - 1] = n.double(ldc1[1])  # LD star A (nonlin coeff)
-        v[22 - 1] = n.double(ldc2[1])  # LD star B (nonlin coeff)
         #Reflection effect star A
         v[11 - 1] = n.double(0.5 * albedo1 * ll2 * r1 ** 2.0)
         #Reflection effect star B
         v[12 - 1] = n.double(0.5 * albedo2 * ll1 * r2 ** 2.0)
+        v[13 - 1] = n.double(self.q)  # Mass ratio of system
+        v[15 - 1] = n.double(0.0)  # Amount of third light
         v[16 - 1] = n.double(0.0)  #Phase shift of primary min
         v[17 - 1] = n.double(0.0)  #Light scale factor (mag)
+        v[18 - 1] = n.double(1.0)  # Integ. ring size (deg)
+        v[21 - 1] = n.double(ldc1[1])  # LD star A (nonlin coeff)
+        v[22 - 1] = n.double(ldc2[1])  # LD star B (nonlin coeff)
 
         # get light curve
         y = run_EBOP(v, ldtype, ph, nph, Nmax=Nmax, components=True)
