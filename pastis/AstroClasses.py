@@ -976,7 +976,7 @@ class PlanSys(object):
         elif isinstance(planet, FitPlanet):
             return planet.get_GD(photband, 'secondary')
 
-    def get_LC(self, t, photband='Kepler', isphase=False):
+    def get_LC(self, t, photband='Kepler', isphase=False, dt0=0.0):
         #PlanSys
 
         if len(self.planets) > 1 and isphase:
@@ -1005,9 +1005,9 @@ class PlanSys(object):
 
             ## Prepare phase or time array
             if not isphase:
+                t0 = planet.orbital_parameters.T0 + dt0
                 # Compute phase
-                ph = ((
-                      t - planet.orbital_parameters.T0) / planet.orbital_parameters.P) % 1.0
+                ph = ( (t - t0) / planet.orbital_parameters.P) % 1.0
             else:
                 ph = t
                 ph = ph.astype('d')
@@ -1497,17 +1497,20 @@ class FitBinary(object):
         else:
             return n.ones(len(t))
 
-    def get_LC(self, t, photband='Kepler', isphase=False):
+    def get_LC(self, t, photband='Kepler', isphase=False, dt0=0.0):
         # FitBinary
         """
         Return the normalized LC of the planetary system.
+        
+        if dt0 is given, it is used to correct the transit ephemeris. This is
+        used to measure individual transit times.
         """
 
         ## Prepare phase or time array
         if not isphase:
+            t0 = self.orbital_parameters.T0 + dt0
             # Compute phase
-            ph = ((
-                  t - self.orbital_parameters.T0) / self.orbital_parameters.P) % 1.0
+            ph = ( (t - t0) / self.orbital_parameters.P) % 1.0
         else:
             ph = t
 

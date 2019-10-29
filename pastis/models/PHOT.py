@@ -13,7 +13,7 @@ else:
     
 from ..exceptions import EBOPparamError
 
-def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
+def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
     """
     Compute SED for all objects in args, for all photbands.
     """
@@ -33,21 +33,21 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
             fluxes.append(phot.get_flux(spectrum, photband))
 
             # Get lightcurve from binary
-            lightcurves.append(obj.get_LC(t, photband, isphase))
+            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
 
         elif isinstance(obj, ac.PlanSys):
             # Get flux from star
             fluxes.append(phot.get_flux(obj.star.get_spectrum(), photband))
 
             # Get lightcurve from planetary system
-            lightcurves.append(obj.get_LC(t, photband, isphase))
+            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
             
         elif isinstance(obj, ac.FitBinary):
             # Get flux from star
             fluxes.append(1.)
 
             # Get lightcurve from planetary system
-            lightcurves.append(obj.get_LC(t, photband, isphase))
+            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
 
         elif isinstance(obj, ac.Triple):
             # Get LC for each component of triple system
@@ -64,7 +64,8 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
                     fluxes.append(phot.get_flux(spectrum, photband))
 
                     # Get lightcurve from binary
-                    lightcurves.append(component.get_LC(t, photband, isphase))
+                    lightcurves.append(component.get_LC(t, photband, isphase, 
+                                                        dt0))
 
 
                 elif isinstance(component, ac.PlanSys):
@@ -72,7 +73,8 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
                     fluxes.append(phot.get_flux(component.star.get_spectrum(), photband))
 
                     # Get lightcurve from planetary system
-                    lightcurves.append(component.get_LC(t, photband, isphase))
+                    lightcurves.append(component.get_LC(t, photband, isphase, 
+                                                        dt0))
 
 
     # Produce contaminating lightcurve and flux

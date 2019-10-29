@@ -951,6 +951,12 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
             # Get value of contamination and Foot
             cont = labeldict[key+'_contamination'].get_value()
             foot = labeldict[key+'_foot'].get_value()
+            
+            # Get value of ephemeris offset, if it exists
+            try:
+                dt0 = labeldict[key+'_dt0'].get_value()
+            except KeyError:
+                dt0 = 0.0
 
             # Get value of jitter for this dataset
             jitter = get_jitter(datadict[key], key, labeldict)
@@ -983,7 +989,7 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
                     != len(datadict[key]['data']['time']):
                 # Compute theoretical OVERSAMPLED lightcurve
                 osft = PASTIS_PHOT(datadict[key]['overtime'], filtre,
-                                   datadict[key]['is_phase'], cont, foot,
+                                   datadict[key]['is_phase'], cont, foot, dt0,
                                    *objects)
 
                 # Rebin model flux to original sampling rate
@@ -1000,7 +1006,7 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
             else:
                 # Compute theoretical light curves and likelihood
                 ft = PASTIS_PHOT(datadict[key]['data']['time'], filtre,
-                                 datadict[key]['is_phase'], cont, foot,
+                                 datadict[key]['is_phase'], cont, foot, dt0,
                                  *objects)
 
             # TESTING AUTOCORRECTION
@@ -1018,7 +1024,7 @@ def get_likelihood(state, input_dict, datadict, labeldict, autocorrect,
 
                 else:
                     ft = PASTIS_PHOT(tf, filtre, datadict[key]['is_phase'],
-                                     cont, foot, *objects)
+                                     cont, foot, dt0, *objects)
 
                     print(len(ff), len(efc), len(ft))
                     L, logL = likelihood(ff, efc, ft)
