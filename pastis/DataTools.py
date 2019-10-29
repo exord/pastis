@@ -43,7 +43,10 @@ def oversample_time_notexp(v, oversampling_factor, dt=None):
     indmax = n.argmax(hist)
     dt = 0.5*(bins_edges[indmax] + bins_edges[indmax + 1.0])
     """
-    if n.isscalar(oversampling_factor):
+    if oversampling_factor == 1:
+        return v
+    
+    elif n.isscalar(oversampling_factor):
         oversampling_factor = n.zeros(len(v), float) + oversampling_factor
 
     t = n.array([])
