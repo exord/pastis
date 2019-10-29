@@ -90,76 +90,96 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, *args):
     return foot*n.sum(fluxes * lightcurves, axis = 0)/n.sum(fluxes)
     
 
-def run_EBOP(v, ldtype, x, Nx, Nmax = None, components = False):
+def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
     """
     Runs JKTEBOP with variables v
     x in phase
     """
     print_warning = False
     ## Check limits of input parameters
-    if v[2-1] > 0.8:
-        print_warning = True; wstring = ['Sum of fractional radii', 'maximum', 0.8]
-    if v[2-1] < 0.0:
-        print_warning = True; wstring = ['Sum of fractional radii', 'minimum', 0.0]
-    if v[3-1] < 0.0:
-        print_warning = True; wstring = ['Radii ratio', 'minimum', 0.0]
-
-    if v[3-1] > 100:
-        print_warning = True; wstring = ['Radii ratio', 'maximum', 100.0]
-
-    if v[6-1] < 50.0:
-        print_warning = True; wstring = ['Inclination', 'minimum', 50.0]
-                                
-    if v[6-1] > 140.0:
-        print_warning = True; wstring = ['Inclination', 'maximum', 140.0]
-
-    if v[13-1] < 0.0:
-        print_warning = True; wstring = ['Mass ratio', 'minimum', 0.0]
-
-    if v[13-1] > 1e3:
-        print_warning = True; wstring = ['Mass ratio', 'maximum', 1000.0]
-
-    if v[7-1] < -1.0 or v[7-1] > 1.0:
-        print_warning = True; wstring = ['Eccentricity', 'maximum', 1.0]
-
-    if v[8-1] < -1.0 or v[8-1] > 1.0:
-        print_warning = True; wstring = ['Eccentricity', 'maximum', 1.0]
-
-    if v[9-1] < -10.0 or v[10-1] < -10:
-        print_warning = True; wstring = ['Gravity darkening', 'minimum', -10.0]
-    if v[9-1] > 10.0 or v[10-1] > 10:
-        print_warning = True; wstring = ['Gravity darkening', 'maximum', 10.0]
     if v[1-1] > 100.0:
-        print_warning = True; wstring = ['Surface brightness ratio', 'maximum', 100.0]
+        print_warning = True
+        wstring = ['Surface brightness ratio', 'maximum', 100.0]
     if v[1-1] < 0.0:
-        print_warning = True; wstring = ['Surface brightness ratio', 'minimum', 0.0]
+        print_warning = True
+        wstring = ['Surface brightness ratio', 'minimum', 0.0]
+    if v[2-1] > 0.8:
+        print_warning = True
+        wstring = ['Sum of fractional radii', 'maximum', 0.8]
+    if v[2-1] < 0.0:
+        print_warning = True
+        wstring = ['Sum of fractional radii', 'minimum', 0.0]
+    if v[3-1] < 0.0:
+        print_warning = True
+        wstring = ['Radii ratio', 'minimum', 0.0]
+    if v[3-1] > 100:
+        print_warning = True
+        wstring = ['Radii ratio', 'maximum', 100.0]
+    if v[6-1] < 50.0:
+        print_warning = True
+        wstring = ['Inclination', 'minimum', 50.0]                                
+    if v[6-1] > 140.0:
+        print_warning = True
+        wstring = ['Inclination', 'maximum', 140.0]
+    if v[7-1] < -1.0 or v[7-1] > 1.0:
+        print_warning = True
+        wstring = ['Eccentricity', 'maximum', 1.0]
+    if v[8-1] < -1.0 or v[8-1] > 1.0:
+        print_warning = True
+        wstring = ['Eccentricity', 'maximum', 1.0]
+    if v[9-1] < -10.0 or v[10-1] < -10:
+        print_warning = True
+        wstring = ['Gravity darkening', 'minimum', -10.0]
+    if v[9-1] > 10.0 or v[10-1] > 10:
+        print_warning = True
+        wstring = ['Gravity darkening', 'maximum', 10.0]
+    if v[13-1] < 0.0:
+        print_warning = True
+        wstring = ['Mass ratio', 'minimum', 0.0]
+    if v[13-1] > 1e3:
+        print_warning = True
+        wstring = ['Mass ratio', 'maximum', 1000.0]
     if v[15-1] < 0.0:
-        print_warning = True; wstring = ['Third light', 'minimum', 0.0]
+        print_warning = True
+        wstring = ['Third light', 'minimum', 0.0]
     if v[15-1] > 1.0:
-        print_warning = True; wstring = ['Third light', 'maximum', 1.0]
-
+        print_warning = True
+        wstring = ['Third light', 'maximum', 1.0]
+        
     ### Avoid periapsis distance shorter than stellar radius!
     if v[2-1] > (1 - n.sqrt(v[7-1]**2 + v[8-1]**2)):
         raise EBOPparamError('Periapsis distance shorter than sum of radii.')
-        
+
     if print_warning:
         raise EBOPparamError('%s out of bounds; %s allowed is %f'%(wstring[0], wstring[1], wstring[2]))
 
     if Nmax == None or Nx > Nmax:
+
+        # Fix phase so that it goes from -0.5 to 0.5
+        x = n.where(x > 0.5, x-1.0, x)
+        
+        # Compute maximum and minimum and phase coverage
+        phmin = n.min(x)
+        phmax = n.max(x)
+        """
         condg05 = x > 0.5
         condl05 = x < 0.5
-        if ~condg05.all() or ~condl05.all():
+        if not (n.any(condg05) or n.any(condl05)):
             # There are not phases > 0.5 or phases < 0.5
             phmin = n.min(x)
             phmax = n.max(x)
         else:
             phmin = n.min(x[condg05] - 1.0)
             phmax = n.max(x[condl05])
-
+        """
+    
+        # Compute phase coverage
         phcov = phmax - phmin
         
     if Nmax == None:
         # Compute apropiate Nmax
+
+        # Compute individual radii (normalised to semi-major axis)
         if v[3-1] >= 0.0:
             R1 = v[2-1] / (1.0 + v[3-1])
             R2 = v[2-1] / (1.0 + (1.0/v[3-1]))
@@ -176,21 +196,29 @@ def run_EBOP(v, ldtype, x, Nx, Nmax = None, components = False):
         # correct for phase coverage
         Nmax = n.int(Nmax_allph*phcov)
 
+    # IF the number of points in the light curve is larger than Nmax, only
+    # compute model at Nmax points.
     if Nx > Nmax:
+        
+        """
         N1 = round(Nmax*abs(phmax)/phcov)
         xx1 = n.linspace(0.0, phmax, N1)
+        #TODO: correct this, Nmax - N1 can be negative and everything goes wrong
         xx2 = n.linspace(1 + phmin, 1.0, Nmax - N1)
         xx = n.concatenate((xx1, xx2))
+        """
+        xx = n.linspace(phmin, phmax, Nmax)
         
         if components:
-            LPi,LSi,ECLi,REFLi = call_task2(v, ldtype, Nmax, xx, components = components)
+            LPi, LSi, ECLi, REFLi = call_task2(v, ldtype, Nmax, xx, 
+                                               components = components)
             # Interpolate output to original x
             LP = n.interp(x, xx, LPi)
             LS = n.interp(x, xx, LSi)
             ECL = n.interp(x, xx, ECLi)
             REFL = n.interp(x, xx, REFLi)
 
-            return LP,LS,ECL,REFL
+            return LP, LS, ECL, REFL
         else:
             yy = call_task2(v, ldtype, Nmax, xx)
             # Interpolate output to original x
