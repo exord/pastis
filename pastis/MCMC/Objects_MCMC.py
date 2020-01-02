@@ -149,7 +149,7 @@ class Chain(object):
             if par.jump: jumpind.append(jj)
         self.jumpind = jumpind
 
-	### NEW: FOR MA
+    	    ### NEW: FOR MA
         self._meanX = n.zeros((self.N, len(jumpind)), dtype = float)
         self._meanX[0] = self.get_current_state_jumping_values()
         self._S0 = n.diag(self.get_current_state_jumping_values()*0.1)
@@ -160,7 +160,7 @@ class Chain(object):
                 if j > i:
                     self._S0[i,j] = self._S0[j,i] = 0.1
 		    
-	###
+	   ###
 	
         # For PCA
         self._currentstatePCA = None

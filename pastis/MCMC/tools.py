@@ -14,7 +14,7 @@ def state_constructor(input_dict):
     """
 
     theta = []
-    global labeldict
+    #global labeldict
     labeldict = {}
 
     # Iteration over all objects
