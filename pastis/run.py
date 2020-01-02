@@ -38,8 +38,7 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
 
             time.sleep(0.5)
             filename = infodict['name'] + '_' + (infodict['comment']).replace(
-                " ", "_") + '_Beta%.6f_rep' % beta + str(c).zfill(
-                4) + '_queued' + sufix
+                " ", "_")
             f = open(os.path.join(runpath, infodict['name'], filename + '.py'),
                      'w')
             f.write('\'\'\'\n')
@@ -56,11 +55,14 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
             #f.write('from numpy import *\n')
             f.write('time.sleep(10*' + str(
                 c) + ')\n')  # to avoid file access problems in the cluster
+            
+            f.write('PASTISroot = os.getenv(\'PASTISPATH\')\n')
             f.write(
                 "sufix = datetime.datetime.isoformat(datetime.datetime.now())\n\n")
-            f.write("outfile = os.path.join(%s, %s, %s+sufix+'.mcmc')\n\n" % (
-            "'" + resultpath + "'", "'" + infodict['name'] + "'",
-            "'" + filename + "_started'"))
+            f.write("outfile = os.path.join(PASTISroot, \'resultfiles\', "
+                    "\'{}\',\'{}\'+sufix+'.mcmc')\n\n".format(infodict['name'], 
+                                                              filename+"_started"))
+            
             f.write("f = open('" + pastisfile + "', 'rb')\n")
             f.write("dd = pickle.load(f)\n")
             f.write("f.close()\n\n")
