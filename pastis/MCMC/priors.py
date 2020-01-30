@@ -391,6 +391,10 @@ def prior_constructor(input_dict, customprior_dict):
                     familytree = family.copy()
                     familytree.append(photband)
                     
+                    # Skip this parameter if not jumping.
+                    if parlist[photband][1] == 0:
+                        continue
+                    
                     # Define name
                     parname = '_'.join(familytree)
                 

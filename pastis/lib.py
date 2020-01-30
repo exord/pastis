@@ -7,7 +7,8 @@ import pickle
 import importlib
 import numpy as np
 
-from . import resultpath, configpath, EBOPparamError, EvolTrackError
+from .paths import resultpath, configpath
+from .exceptions import EBOPparamError, EvolTrackError
 from . import MCMC
 from .DataTools import readdata
 
@@ -102,7 +103,7 @@ def pastis_init(target, simul, posteriorfile=None, datadict=None,
     return priordict, datadict, input_dict
 
 
-def pastis_loglike(samples, params, input_dict, datadict):
+def pastis_loglike(samples, paramdict, jumppardict, input_dict, datadict):
     """
     A wrapper to run the PASTIS.MCMC.get_likelihood function.
 
@@ -113,40 +114,41 @@ def pastis_loglike(samples, params, input_dict, datadict):
     likelihood. Array dimensions must be (np x k), where *np* is the number of
     samples and *k* is the number of model parameters.
 
-    :param list params: parameter names. Must be in the PASTIS format: \
-    objectname_parametername.
+    :param dict jumppardict: dictionary containing the Parameter 
+    instances for all jump parameters. Keys must be the parameter names. 
 
     :return:
     """
     # Prepare output arrays
     loglike = np.zeros(samples.shape[0])
 
-    for s in range(samples.shape[0]):
+    for i, s in enumerate(samples):
 
-        for parameter_index, full_param_name in enumerate(params):
+        for parameter_index, param_name in enumerate(jumppardict):
 
+            if paramdict[param_name].jump == 0:
+                continue
+            
             # Modify input_dict
-            obj_name, param_name = full_param_name.split('_')
-            input_dict[obj_name][param_name][0] = samples[s, parameter_index]
+            paramdict[param_name].set_value(s[parameter_index])
 
-        # Construct chain state
-        chain_state, labeldict = MCMC.tools.state_constructor(input_dict)
-
+        chain_state = list(paramdict.values())
+        
         try:
             # Compute likelihood for this state
-            ll, loglike[s], likeout = MCMC.PASTIS_MCMC.get_likelihood(
-                chain_state, input_dict, datadict, labeldict, False,
+            ll, loglike[i], likeout = MCMC.PASTIS_MCMC.get_likelihood(
+                chain_state, input_dict, datadict, paramdict, False,
                 False)
 
         except (ValueError, RuntimeError, EvolTrackError, EBOPparamError):
             print('Error in likelihood computation, setting lnlike to -np.inf')
-            loglike[s] = -np.inf
+            loglike[i] = -np.inf
             pass
 
     return loglike
 
 
-def pastis_logprior(samples, params, input_dict, pdfdict=None):
+def pastis_logprior(samples, paramdict, pdfdict):
     """
     A wrapper to run the PASTIS.MCMC.get_likelihood function.
 
@@ -164,37 +166,37 @@ def pastis_logprior(samples, params, input_dict, pdfdict=None):
     # Prepare output arrays
     logprior = np.zeros(samples.shape[0])
 
-    if pdfdict is None:
-        # Build prior instances.
-        pdfdict = MCMC.priors.prior_constructor(input_dict, {})
+    for i, s in enumerate(samples):
 
-    for s in range(samples.shape[0]):
-
-        for parameter_index, full_param_name in enumerate(params):
-
+        for parameter_index, param_name in enumerate(paramdict):
+            
             # Modify input_dict
-            obj_name, param_name = full_param_name.split('_')[:2]
-            input_dict[obj_name][param_name][0] = samples[s, parameter_index]
+            paramdict[param_name].set_value(s[parameter_index])
 
         # Construct chain state
-        chain_state, labeldict = MCMC.tools.state_constructor(input_dict)
+        #chain_state, labeldict = MCMC.tools.state_constructor(input_dict)
 
         # Compute prior distribution for this state
-        prior_probability = MCMC.priors.compute_priors(pdfdict, labeldict)[0]
-        logprior[s] = np.log(prior_probability)
+        prior_probability = MCMC.priors.compute_priors(pdfdict, 
+                                                       paramdict)[0]
+        logprior[i] = np.log(prior_probability)
 
     return logprior
 
 
-def lnpost(samples, params, input_dict, datadict, priordict=None):
+# def lnpost(samples, params, input_dict, datadict, priordict=None):
 
+def lnpost(samples, input_dict, paramdict, jumpparamdict, 
+           datadict, priordict):
+    
     x = samples.copy()
     x = np.reshape(x, (1, len(x)))
-
-    lnprior = pastis_logprior(x, params, input_dict, priordict)
+    
+    lnprior = pastis_logprior(x, jumpparamdict, priordict)
     # Do not compute likelihood for points outside prior.
     if lnprior[0] == -np.inf:
         return -np.inf
-    lnlike = pastis_loglike(x, params, input_dict, datadict)
+    lnlike = pastis_loglike(x, paramdict, jumpparamdict, input_dict, 
+                            datadict)
 
     return (lnprior + lnlike)[0]
