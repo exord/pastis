@@ -37,7 +37,7 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
 
         elif isinstance(obj, ac.PlanSys):
             # Get flux from star
-            fluxes.append(phot.get_flux(obj.star.get_spectrum(), photband))
+            fluxes.append(1.)
 
             # Get lightcurve from planetary system
             lightcurves.append(obj.get_LC(t, photband, isphase, dt0))

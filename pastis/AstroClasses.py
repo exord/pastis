@@ -416,11 +416,14 @@ class PlanetHost(Star):
     def __init__(self, **kwargs):
         Star.__init__(self, **kwargs)
 
-        self.test_critical(['teff', 'dens'], ['Effective temperature',
-                                              'Mean stellar density'])
-        
-        # Get parameters from tracks
-        self.get_stellarparameters()
+# =============================================================================
+# COMENTADO PARA WASP-148
+#         self.test_critical(['teff', 'dens'], ['Effective temperature',
+#                                               'Mean stellar density'])
+#         
+#         # Get parameters from tracks
+#         self.get_stellarparameters()
+# =============================================================================
 
     def get_stellarparameters(self, output=False):
         """
@@ -777,55 +780,56 @@ class PlanSys(object):
                 'PlanetHost only takes Planet or FitPlanet instances as planets.')
                 continue
 
-            if isinstance(planet, Planet):
-                planet.q = planet.mact / star.mact
-                mact = mact + planet.mact
-
-            elif isinstance(planet, FitPlanet):
-                if planet.q is None:
-                    ## If no q is given, then compute mass iteratively
-
-                    if planet.orbital_parameters.incl is not None:
-
-                        Mp = tools.iterative_mass(planet.K1,
-                                                  planet.orbital_parameters.P,
-                                                  self.star.mact,
-                                                  planet.orbital_parameters.ecc,
-                                                  planet.orbital_parameters.incl * 180.0 / pi
-                        )
-
-                    elif planet.orbital_parameters.b is not None:
-
-                        Mp = tools.iterative_mass(planet.K1,
-                                                  planet.orbital_parameters.P,
-                                                  self.star.mact,
-                                                  planet.orbital_parameters.ecc,
-                                                  planet.orbital_parameters.b,
-                                                  omega=planet.orbital_parameters.omega,
-                                                  Rs=self.star.R,
-                                                  use_b=True
-                        )
-
-                    else:
-                        raise ValueError
-
-                    planet.q = Mp / self.star.mact
-                    mact = mact + Mp
-
-                else:
-                    #If given, use to compute total mass of the system
-                    mact = mact + planet.q * self.star.mact
-
+# =============================================================================
+#   COMENTADO PARA WASP-148
+#             if isinstance(planet, Planet):
+#                 planet.q = planet.mact / star.mact
+#                 mact = mact + planet.mact
+# 
+#             elif isinstance(planet, FitPlanet):
+#                 if planet.q is None:
+#                     ## If no q is given, then compute mass iteratively
+# 
+#                     if planet.orbital_parameters.incl is not None:
+# 
+#                         Mp = tools.iterative_mass(planet.K1,
+#                                                   planet.orbital_parameters.P,
+#                                                   self.star.mact,
+#                                                   planet.orbital_parameters.ecc,
+#                                                   planet.orbital_parameters.incl * 180.0 / pi
+#                         )
+# 
+#                     elif planet.orbital_parameters.b is not None:
+# 
+#                         Mp = tools.iterative_mass(planet.K1,
+#                                                   planet.orbital_parameters.P,
+#                                                   self.star.mact,
+#                                                   planet.orbital_parameters.ecc,
+#                                                   planet.orbital_parameters.b,
+#                                                   omega=planet.orbital_parameters.omega,
+#                                                   Rs=self.star.R,
+#                                                   use_b=True
+#                         )
+# 
+#                     else:
+#                         raise ValueError
+# 
+#                     planet.q = Mp / self.star.mact
+#                     mact = mact + Mp
+# 
+#                 else:
+#                     #If given, use to compute total mass of the system
+#                     mact = mact + planet.q * self.star.mact
+# 
+# =============================================================================
             if not isinstance(star, PlanetHost):
                 star.dens = star.mact / star.R ** 3.0
 
             # Impose stellar density
-            ## Compute a/R* for this planet based on stellar density,
-            ## and period.
+            # Compute a/R* for this planet based on stellar density, and period.
             Ps = planet.orbital_parameters.P * 86400  # in seconds
-            ar3 = (
-            0.25 * G / (pi * pi) * ( Msun / Rsun ** 3 ) * (1 + planet.q) *
-            self.star.dens * Ps ** 2 )
+            ar3 = (0.25 * G / (pi * pi) * ( Msun / Rsun ** 3 ) * 
+                   (1 + planet.q) * self.star.dens * Ps ** 2 )
             planet.ar = ar3 ** (1. / 3.)
 
             if planet.orbital_parameters.bprime is not None and planet.ar is not None:

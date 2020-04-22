@@ -496,14 +496,17 @@ def PASTIS_RV(t_rv, RVdatadict, *args):
     # If sole object is a Planetary System
     if len(args) == 1 and isinstance(args[0], ac.PlanSys):
         
-        # Get stellar B-V, FWHM (and sigma0), and contrast
-        args[0].star.BmV = args[0].star.get_BmV()
-        FWHM = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro)
-        sigma0 = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro, 
-                          output='sigma0')
-        contrast = get_contrast(FWHM, args[0].star.BmV, args[0].star.z, 
-                                spectro, mask)
-        CCF_width = FWHM/(2.*n.sqrt(2.*n.log(2.)))
+# =============================================================================
+# 2020-04-22: COMENTADO PARA WASP-148; no lo entiendo.
+#         # Get stellar B-V, FWHM (and sigma0), and contrast
+#         args[0].star.BmV = args[0].star.get_BmV()
+#         FWHM = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro)
+#         sigma0 = get_FWHM(args[0].star.vsini, args[0].star.BmV, spectro, 
+#                           output='sigma0')
+#         contrast = get_contrast(FWHM, args[0].star.BmV, args[0].star.z, 
+#                                 spectro, mask)
+#         CCF_width = FWHM/(2.*n.sqrt(2.*n.log(2.)))
+# =============================================================================
 
         if 'RV' in RVdatadict:
             output_dict['RV'] = args[0].get_RV(t_rv) - RVdatadict['RV']['offset']
