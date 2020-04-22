@@ -151,10 +151,17 @@ def make_plansys(objname, dd, imposeobj = None):
     ## Make central star
     dd1 = {}
 
+    # Get name of central star in planetary system
     starname = inputdict[objname]['star1'] ## CHECK NAME OF STAR IN QBIN
+    
     for key in inputdict[starname].keys():
-        dd1[key] = inputdict[starname][key][0]
-
+        if not isinstance(inputdict[starname][key], dict):
+            dd1[key] = inputdict[starname][key][0]
+        else:
+            dd1[key] = dict((photband, 
+                             inputdict[starname][key][photband][0]) for
+                            photband in inputdict[starname][key])
+        
     ## If impositions are to be made (e.g. if plansys belongs to a triple system)
     if imposeobj != None:
         dd1['logage'] = imposeobj.logage
@@ -163,16 +170,17 @@ def make_plansys(objname, dd, imposeobj = None):
         dd1['dist'] = imposeobj.dist
         dd1['ebmv'] = imposeobj.ebmv
 
+    # Build central star instance
     star = make_star(starname, dd1)
 
     try:
-        ## Remove star from list; inside try to use as standalone
+        # Remove star from list; inside try to use as standalone
         inputdict.pop(starname)
     except NameError:
         pass
 
 
-    ## Construct planet objects
+    # Construct planet instances
     planets = []
     for planet in dd.keys():
 
@@ -180,8 +188,18 @@ def make_plansys(objname, dd, imposeobj = None):
             continue
 
         ddp = {}
-        for key in inputdict[dd[planet]].keys():
-            ddp[key] = inputdict[dd[planet]][key][0]
+        
+        # Get planet name plansys dictionary
+        planetname = dd[planet]
+                
+        for key in inputdict[planetname].keys():
+
+            if not isinstance(inputdict[planetname][key], dict):
+                ddp[key] = inputdict[planetname][key][0]
+            else:
+                ddp[key] = dict((photband, 
+                                 inputdict[planetname][key][photband][0]) for
+                                 photband in inputdict[planetname][key])
 
         if not 'orbital_parameters' in ddp.keys():
             ddp['orbital_parameters'] = ac.orbital_parameters(**ddp)
