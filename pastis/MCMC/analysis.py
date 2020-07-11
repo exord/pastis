@@ -17,6 +17,7 @@ from .. import *
 # from .. import resultpath
 # from .. import Msun, Rsun, Mjup, Rjup, G, au, Rsun2Rjup, Msun2Mjup, Mearth
 # from .. import tools
+from ..paths import resultpath
 from .. import AstroClasses, ObjectBuilder
 from ..limbdarkening import get_LD
 from .. import photometry as phot
