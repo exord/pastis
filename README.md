@@ -10,11 +10,14 @@
 ### External models
 External models are used for the stellar atmospheres, evolution tracks, limb darkening parameters, and interstellar extinction. Besides, a library of photmetric filters are necessary to run PASTIS. All these files are provided as part of the repository in the external_models folder.
 
-THIS IS NOT WORKING YET
+**Update** The zipped external models can be found in this [Google Drive](https://drive.google.com/file/d/1h8NLATVtib9lhFMe7H1hMzYcrRSqvq0R/view?usp=sharing).
+
 To unpack the library, use ``tar``
 ```
 tar -xzvf pastislib.tgz
 ```
+
+They have to be placed in the location specified by $PASTISLIB.
 
 ### JKTEBOP
 ``PASTIS`` relies on some subroutines from the ``JKTEBOP`` package by Southworth [ADD LINK].
@@ -38,7 +41,7 @@ You also need the ```Python.h''' header file.
 The resulting file, ``task2_components.so`` must be located in the directory ``$PASTISLIB/fortran``, which is included in the ``sys.path`` variable at startup.
 The original fortran file is found in the ``external_models/fortran`` directory.
 
-### C++ 
+### C++
 For performance issues the code to fit CCFs using a Gaussian function is written in C++. This is provided in the ``$PASTISLIB/cpp`` directory. The shared library used by ``PASTIS`` is compiled by running
 
 ```
