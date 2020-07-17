@@ -48,7 +48,7 @@ def create_pastis_file(commentstr):
 
     ddir = os.path.join(datapath, objectname)
     target = objectname.replace('-','')
-    
+
     datafile_list = {'WASP1': {'MeanFlux': 0.0,
                     'datafile': os.path.join(ddir,
                                             '{}_SuperWASP1.rdb'.format(target)),
@@ -66,7 +66,7 @@ def create_pastis_file(commentstr):
                     'sampling': 1,
                     'type': 'PHOT'
                     },
-                
+
                     'SOPHIEp': {'datafile': os.path.join(ddir,
                                                         '{}_SOPHIE2.rdb'.format(target)),
                                 'instrument': 'SOPHIE HE',
@@ -90,19 +90,27 @@ def create_pastis_file(commentstr):
                                 }
 
                 }
-        
+
 
     #---------------------
     #        OBJECTS
     #--------------------
     hostdict = {
+        # dens: densidad estelar media
         'dens': [0.0, 1, 'Normal', 1.79 , 0.3, 0.00, 0.0, ''],
+        # teff: temperatura efectiva
         'teff': [4850.0, 1, 'Normal', 4850.0, 100.0, 0.0, 0.0, ''],
+        # z: metalicidad, [Fe/H]
         'z': [-0.07, 1, 'Normal', -0.07, 0.18, 0.0, 0.0, ''],
+        # dist: distancia en parsecs
         'dist': [1000.0, 1, 'Uniform', 100.0, 2000.0, 0.0, 0.0, ''],
+        # ebmv: enrojecimiento E(B-V)
         'ebmv': [0.1, 1, 'Uniform', 0.0, 0.2, 0.0, 0.0, '', None],
+        # velocidad media de la estrella en km/s
         'v0': [-5.0, 1, 'Uniform', -6.0, -4.0, 0.0, 0.0, ''],
+        # proyección de la velocidad de rotación
         'vsini': [10.0, 0, 'Normal', 0.0, 0.0, 0.0, 0.0, ''],
+        # gd: coeficiente de oscurecimiento por gravedad
         'gd': [1.0, 0, 'Normal',0.0,0.0,0.0,0.0,'']
         }
 
@@ -112,12 +120,19 @@ def create_pastis_file(commentstr):
                 0.0, 0.0, ''],  ## Exoplanets.org (error x 10)
             'K1': [6.0, 1, 'Uniform', 0.0, 0.5, 0.0, 0.0, ''],
             'albedo2': [0.0, 0, 'Normal', 0.0, 0.0, 0.0, 0.0, ''],
+            # ecc: excentricidad orbital
             'ecc': [0.2, 1, 'Uniform', 0.0, 1.0, 0.0, 0.0, ''],
+            # b: parámetro de impacto: r_ci / a * cos(i)
             'b' : [0.5, 1, 'Uniform', 0.0, 1.0, 0.0, 0.0, ''],
+            # incl: inclinación orbital
             # 'incl' : [90.0, 1, 'Sine', 60.0, 90.0, 0.0, 0.0, ''],
+            # kr: cociente de radios planeta/estrella: kr = Rp/Rs
             'kr': [0.1, 1, 'Jeffreys', 0.01, 0.5, 0.0, 0.0, ''],
+            # ar: semi-eje mayor, normalizado al radio de la estrella: ar = a/Rs
             'ar': [5, 1, 'Jeffreys', 5.0, 20.0, 0.0, 0.0, ''],
+            # omega: argumento del pericentro en grados
             'omega': [240.7, 1, 'Uniform', 0.0, 360.0, 0.0, 0.0, ''],
+            # q: cociente de masas, q = Mp/Ms
             'q': [0.0, 0, 'Uniform', 0.0, 0.2, 0.0, 0.0, '']
           }
 
@@ -181,7 +196,5 @@ if __name__ == '__main__':
     ## Iteration over these files
     pastisfile = create_pastis_file(comment)
 
-    PASTIS.run.run_sim(pastisfile, pastisversion = version,
-                       submit = submit)
-
-           
+    # PASTIS.run.run_sim(pastisfile, pastisversion = version,
+    #                    submit = submit)
