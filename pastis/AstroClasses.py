@@ -14,9 +14,7 @@ from . import tools
 from . import photometry as phot
 
 try:
-    # from .photometry import ww
-    from .photometry import (AMz, AMteff, AMlogg, AMspectra, AMspectra01, ww,
-                            Filters)
+    from .photometry import ww
 except ImportError:
     pass
     # Commented (see issue #334)

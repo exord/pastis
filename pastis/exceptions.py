@@ -7,15 +7,15 @@ Created on Thu Mar 15 11:34:35 2018
 
 Define Exception classes
 """
-class EvolTrackError(Exception):
+class EvolTrackError(BaseException):
     pass
 
 
-class OutofIsochroneError(Exception):
+class OutofIsochroneError(BaseException):
     pass
 
 
-class SpectrumInterpolError(Exception):
+class SpectrumInterpolError(BaseException):
     def __init__(self, mesg, indz, indteff, indlogg, outside=False):
         self.mesg = mesg
         self.indz = indz
@@ -35,11 +35,11 @@ class SpectrumGridError(Exception):
         self.indlogg = indlogg
 """
 
-class EBOPparamError(Exception):
+class EBOPparamError(BaseException):
     pass
 
 
-class GlobalSpectrumError(Exception):
+class GlobalSpectrumError(BaseException):
     pass
 
 
