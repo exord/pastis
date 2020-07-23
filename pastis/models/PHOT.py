@@ -25,58 +25,66 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
     for obj in args:
         if isinstance(obj, ac.Star):
             # Get flux from star
-            fluxes.append(phot.get_flux(obj.get_spectrum(), photband))
-            lightcurves.append(obj.get_spots(t, photband))
+            flux = phot.get_flux(obj.get_spectrum(), photband)
+            lc_ = obj.get_spots(t, photband)
 
         elif isinstance(obj, ac.IsoBinary):
             # Add spectrum of each component, and compute flux
             spectrum = obj.star1.get_spectrum() + obj.star2.get_spectrum()
-            fluxes.append(phot.get_flux(spectrum, photband))
+            flux = phot.get_flux(spectrum, photband)
 
             # Get lightcurve from binary
-            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
+            lc_ = obj.get_LC(t, photband, isphase, dt0)
 
         elif isinstance(obj, ac.PlanSys):
             # Get flux from star
-            fluxes.append(phot.get_flux(obj.star.get_spectrum(), photband))
+            flux = phot.get_flux(obj.star.get_spectrum(), photband)
 
             # Get lightcurve from planetary system
-            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
+            lc_ = obj.get_LC(t, photband, isphase, dt0)
 
         elif isinstance(obj, ac.FitBinary):
             # Get flux from star
-            fluxes.append(1.)
+            flux = 1.
 
             # Get lightcurve from planetary system
-            lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
+            lc_ = obj.get_LC(t, photband, isphase, dt0)
 
         elif isinstance(obj, ac.Triple):
             # Get LC for each component of triple system
             for component in (obj.object1, obj.object2):
                 if isinstance(component, ac.Star):
-                    fluxes.append(phot.get_flux(component.get_spectrum(),
-                                                photband))
-                    lightcurves.append(n.ones(len(t)))  # TEMP, implement spots
+                    flux = phot.get_flux(component.get_spectrum(), photband)
+                    lc_ = n.ones(len(t))  # TEMPORAL, implement spots
 
                 elif isinstance(component, ac.IsoBinary):
                     # Add spectrum of each component, and compute flux
                     spectrum = component.star1.get_spectrum() + \
                                component.star2.get_spectrum()
 
-                    fluxes.append(phot.get_flux(spectrum, photband))
+                    flux = phot.get_flux(spectrum, photband)
 
                     # Get lightcurve from binary
-                    lightcurves.append(component.get_LC(t, photband, isphase,
-                                                        dt0))
+                    lc_ = component.get_LC(t, photband, isphase, dt0)
 
                 elif isinstance(component, ac.PlanSys):
                     # Get flux from star
-                    fluxes.append(phot.get_flux(component.star.get_spectrum(),
-                                                photband))
+                    flux = phot.get_flux(component.star.get_spectrum(), 
+                                         photband)
 
                     # Get lightcurve from planetary system
-                    lightcurves.append(component.get_LC(t, photband, isphase,
-                                                        dt0))
+                    lc_ = component.get_LC(t, photband, isphase, dt0)
+                    
+        
+        # Check if no NaN or zero exits
+        # Check if things will work
+        assert flux > 0, "Null flux for object {}".format(obj)
+        assert n.all(~n.isnan(lc_)), \
+            ('{} elements (out of {}) in LC of {} ' 
+            'are NaN'.format(n.sum(n.isnan(lc_)), len(lc_), obj))
+            
+        fluxes.append(flux)
+        lightcurves.append(lc_)
 
     # Produce contaminating lightcurve and flux
     F = n.sum(fluxes)
@@ -87,7 +95,10 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
     fluxes = n.array(fluxes).reshape((len(fluxes), 1))
     lightcurves = n.array(lightcurves)
 
-    return foot*n.sum(fluxes * lightcurves, axis=0)/n.sum(fluxes)
+    # Produce final LC
+    lc = foot*n.sum(fluxes * lightcurves, axis=0)/n.sum(fluxes)
+    
+    return lc
 
 
 def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
