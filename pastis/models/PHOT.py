@@ -1,7 +1,7 @@
 # 2012-03-20: implemented CoRoT colors.
 import sys
 import numpy as n
-#import pymacula
+# import pymacula
 
 from .. import photometry as phot
 
@@ -10,23 +10,24 @@ if sys.version_info > (3, 0):
     import task2_components3 as task2
 else:
     import task2_components as task2
-    
+
 from ..exceptions import EBOPparamError
+
 
 def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
     """
     Compute SED for all objects in args, for all photbands.
     """
     from .. import AstroClasses as ac
-    
+
     fluxes = []
     lightcurves = []
     for obj in args:
         if isinstance(obj, ac.Star):
             # Get flux from star
             fluxes.append(phot.get_flux(obj.get_spectrum(), photband))
-            lightcurves.append(obj.get_spots(t,photband))
-            
+            lightcurves.append(obj.get_spots(t, photband))
+
         elif isinstance(obj, ac.IsoBinary):
             # Add spectrum of each component, and compute flux
             spectrum = obj.star1.get_spectrum() + obj.star2.get_spectrum()
@@ -41,7 +42,7 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
 
             # Get lightcurve from planetary system
             lightcurves.append(obj.get_LC(t, photband, isphase, dt0))
-            
+
         elif isinstance(obj, ac.FitBinary):
             # Get flux from star
             fluxes.append(1.)
@@ -51,46 +52,43 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
 
         elif isinstance(obj, ac.Triple):
             # Get LC for each component of triple system
-            for  component in (obj.object1, obj.object2):
+            for component in (obj.object1, obj.object2):
                 if isinstance(component, ac.Star):
-                    fluxes.append(phot.get_flux(component.get_spectrum(), photband))
-                    lightcurves.append(n.ones(len(t))) # TEMP, implement spots
+                    fluxes.append(phot.get_flux(component.get_spectrum(),
+                                                photband))
+                    lightcurves.append(n.ones(len(t)))  # TEMP, implement spots
 
                 elif isinstance(component, ac.IsoBinary):
                     # Add spectrum of each component, and compute flux
                     spectrum = component.star1.get_spectrum() + \
                                component.star2.get_spectrum()
-                    
+
                     fluxes.append(phot.get_flux(spectrum, photband))
 
                     # Get lightcurve from binary
-                    lightcurves.append(component.get_LC(t, photband, isphase, 
+                    lightcurves.append(component.get_LC(t, photband, isphase,
                                                         dt0))
-
 
                 elif isinstance(component, ac.PlanSys):
                     # Get flux from star
-                    fluxes.append(phot.get_flux(component.star.get_spectrum(), photband))
+                    fluxes.append(phot.get_flux(component.star.get_spectrum(),
+                                                photband))
 
                     # Get lightcurve from planetary system
-                    lightcurves.append(component.get_LC(t, photband, isphase, 
+                    lightcurves.append(component.get_LC(t, photband, isphase,
                                                         dt0))
-
 
     # Produce contaminating lightcurve and flux
     F = n.sum(fluxes)
     fluxes.append(F*cont/(1 - cont))
     lightcurves.append(n.ones(len(t)))
-    
-    # Generate global lightcurve: 
-    fluxes = n.array(fluxes).reshape((len(fluxes),1))
+
+    # Generate global lightcurve:
+    fluxes = n.array(fluxes).reshape((len(fluxes), 1))
     lightcurves = n.array(lightcurves)
-    #import pdb
-    #pdb.set_trace()
-    #return fluxes, lightcurves
-    #print fluxes
-    return foot*n.sum(fluxes * lightcurves, axis = 0)/n.sum(fluxes)
-    
+
+    return foot*n.sum(fluxes * lightcurves, axis=0)/n.sum(fluxes)
+
 
 def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
     """
@@ -98,7 +96,7 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
     x in phase
     """
     print_warning = False
-    ## Check limits of input parameters
+    # Check limits of input parameters
     if v[1-1] > 100.0:
         print_warning = True
         wstring = ['Surface brightness ratio', 'maximum', 100.0]
@@ -119,7 +117,7 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
         wstring = ['Radii ratio', 'maximum', 100.0]
     if v[6-1] < 50.0:
         print_warning = True
-        wstring = ['Inclination', 'minimum', 50.0]                                
+        wstring = ['Inclination', 'minimum', 50.0]
     if v[6-1] > 140.0:
         print_warning = True
         wstring = ['Inclination', 'maximum', 140.0]
@@ -147,19 +145,20 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
     if v[15-1] > 1.0:
         print_warning = True
         wstring = ['Third light', 'maximum', 1.0]
-        
-    ### Avoid periapsis distance shorter than stellar radius!
+
+    # Avoid periapsis distance shorter than stellar radius!
     if v[2-1] > (1 - n.sqrt(v[7-1]**2 + v[8-1]**2)):
         raise EBOPparamError('Periapsis distance shorter than sum of radii.')
 
     if print_warning:
-        raise EBOPparamError('%s out of bounds; %s allowed is %f'%(wstring[0], wstring[1], wstring[2]))
+        raise EBOPparamError('%s out of bounds; %s allowed is'
+                             ' %f' % (wstring[0], wstring[1], wstring[2]))
 
-    if Nmax == None or Nx > Nmax:
+    if Nmax is None or Nx > Nmax:
 
         # Fix phase so that it goes from -0.5 to 0.5
         x = n.where(x > 0.5, x-1.0, x)
-        
+
         # Compute maximum and minimum and phase coverage
         phmin = n.min(x)
         phmax = n.max(x)
@@ -174,11 +173,11 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
             phmin = n.min(x[condg05] - 1.0)
             phmax = n.max(x[condl05])
         """
-    
+
         # Compute phase coverage
         phcov = phmax - phmin
-        
-    if Nmax == None:
+
+    if Nmax is None:
         # Compute apropiate Nmax
 
         # Compute individual radii (normalised to semi-major axis)
@@ -188,10 +187,10 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
         else:
             R1 = v[2-1]
             R2 = n.abs(v[3-1])
-            
+
         # from jktebop
         if R1 < 0.01 or R2 < 0.01:
-            Nmax_allph = 1e5 
+            Nmax_allph = 1e5
         else:
             Nmax_allph = 1e4
 
@@ -201,19 +200,20 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
     # IF the number of points in the light curve is larger than Nmax, only
     # compute model at Nmax points.
     if Nx > Nmax:
-        
+
         """
         N1 = round(Nmax*abs(phmax)/phcov)
         xx1 = n.linspace(0.0, phmax, N1)
-        #TODO: correct this, Nmax - N1 can be negative and everything goes wrong
+        # TODO: correct this, Nmax - N1 can be negative and everything goes
+        # wrong
         xx2 = n.linspace(1 + phmin, 1.0, Nmax - N1)
         xx = n.concatenate((xx1, xx2))
         """
         xx = n.linspace(phmin, phmax, Nmax)
-        
+
         if components:
-            LPi, LSi, ECLi, REFLi = call_task2(v, ldtype, Nmax, xx, 
-                                               components = components)
+            LPi, LSi, ECLi, REFLi = call_task2(v, ldtype, Nmax, xx,
+                                               components=components)
             # Interpolate output to original x
             LP = n.interp(x, xx, LPi)
             LS = n.interp(x, xx, LSi)
@@ -227,24 +227,26 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
             return n.interp(x, xx, yy)
 
     else:
-        return call_task2(v, ldtype, Nx, x, components = components)
-    
-def call_task2(v, ldtype, Npoints, time, components = False):
-    
+        return call_task2(v, ldtype, Nx, x, components=components)
+
+
+def call_task2(v, ldtype, Npoints, time, components=False):
+
     # Define output arrays
     outflux = n.zeros(Npoints)
     LP = n.zeros(Npoints)
     LS = n.zeros(Npoints)
     REFL = n.zeros(Npoints)
     ECL = n.zeros(Npoints)
-    
-    ## Run task 2
+
+    # Run task 2
     task2.task2(v, ldtype, Npoints, time, outflux, LP, LS, REFL, ECL)
 
     if components:
-        return LP,LS,ECL,REFL
+        return LP, LS, ECL, REFL
     else:
-        return outflux        
+        return outflux
+
 
 def macula(t, star, spots, inst):
     """
@@ -263,9 +265,9 @@ def macula(t, star, spots, inst):
     ! d2	 	= Theta_star(10)	! 2nd of four-coeff spot LD terms
     ! d3	 	= Theta_star(11)	! 3rd of four-coeff spot LD terms
     ! d4	 	= Theta_star(12)	! 4th of four-coeff spot LD terms
-    ! ------------------------------------------------------------------------------
+    ! -------------------------------------------------------------------------
     ! Theta_spot(j,k) = Parameters of the k^th spot
-    ! ------------------------------------------------------------------------------
+    ! -------------------------------------------------------------------------
     ! Lambda0(k) 	= Theta_spot(1,k)	! Longitude of spot at time tref(k)
     ! Phi0(k) 	= Theta_spot(2,k)	! Latitude of spot at time tref(k)
     ! alphamax(k)	= Theta_spot(3,k)	! Angular spot size at time tmax(k)
@@ -274,14 +276,14 @@ def macula(t, star, spots, inst):
     ! life(k)	= Theta_spot(6,k)	! Lifetime of spot k (FWFM) [days]
     ! ingress(k)	= Theta_spot(7,k)	! Ingress duration of spot k [days]
     ! egress(k)	= Theta_spot(8,k)	! Egress duration of spot k  [days]
-    ! ------------------------------------------------------------------------------
+    ! -------------------------------------------------------------------------
     ! Theta_inst(j,m) = Instrumental/nuisance parameters
-    ! ------------------------------------------------------------------------------
+    ! -------------------------------------------------------------------------
     ! U(m) 		= Theta_inst(1,m)	! Baseline flux level for m^th data set
     ! B(m) 		= Theta_inst(2,m)	! Blend factor for m^th data set
     """
     import pymacula
-    
+
     # time range
     t_start = n.min(t)-0.05
     t_stop = n.max(t)+0.05
@@ -289,9 +291,10 @@ def macula(t, star, spots, inst):
     derivatives = False
     temporal = False
     tdeltav = False
-	
+
     output = [n.empty(6)]
-		
-    output = pymacula.maculamod.macula(t, derivatives,temporal,tdeltav,star,spots,inst,t_start,t_stop)
-	
+
+    output = pymacula.maculamod.macula(t, derivatives, temporal, tdeltav, star,
+                                       spots, inst, t_start, t_stop)
+
     return output[0]

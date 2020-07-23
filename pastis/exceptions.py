@@ -7,6 +7,8 @@ Created on Thu Mar 15 11:34:35 2018
 
 Define Exception classes
 """
+
+
 class EvolTrackError(BaseException):
     pass
 
@@ -26,6 +28,7 @@ class SpectrumInterpolError(BaseException):
     def __str__(self):
         return self.mesg
 
+
 """
 class SpectrumGridError(Exception):
     def __init__(self, mesg, indz, indteff, indlogg):
@@ -34,6 +37,7 @@ class SpectrumGridError(Exception):
         self.indteff = indteff
         self.indlogg = indlogg
 """
+
 
 class EBOPparamError(BaseException):
     pass
