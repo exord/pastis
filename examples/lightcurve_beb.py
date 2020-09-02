@@ -27,7 +27,7 @@ while not_passed:
         pd = input_dict[obj]
         for par in pd:
             if isinstance(pd[par], list) and pd[par][1] > 0:
-                pd[par][0] = round(priordict[obj+'_'+par].rvs(),2)
+                pd[par][0] = priordict[obj+'_'+par].rvs()
             
     # Instantiate binary and foreground star
     try:
@@ -57,8 +57,12 @@ while not_passed:
 # beb.star2.L
 #
 # =============================================================================
-t = np.linspace(beb.orbital_parameters.T0 - beb.orbital_parameters.P,
-                beb.orbital_parameters.T0 + beb.orbital_parameters.P, 1000)
+tc = beb.orbital_parameters.T0
+per = beb.orbital_parameters.P
+dt = 2.0 / (24.0 * 60.0)
+
+# Sampling array, centred in Tc, width P, sampling; 2 min)
+t = np.arange(tc - per/2, tc + per/2, dt) 
 
 f = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
                          *[star, beb])

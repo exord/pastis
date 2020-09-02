@@ -27,7 +27,7 @@ while not_passed:
         pd = input_dict[obj]
         for par in pd:
             if isinstance(pd[par], list) and pd[par][1] > 0:
-                pd[par][0] = round(priordict[obj+'_'+par].rvs(),2)
+                pd[par][0] = priordict[obj+'_'+par].rvs()
             
     # Instantiate binary and foreground star
     try:
