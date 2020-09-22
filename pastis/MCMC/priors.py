@@ -409,6 +409,10 @@ def prior_constructor(input_dict, customprior_dict):
                 
                     priordict[parname] = prior
             
+            elif isinstance(parlist, str):
+                print('Parameter {} does not seem to need a prior.'
+                      ''.format('_'.join(family)))
+                
             else:
                 warnings.warn('Parameter {} does not have a correct '
                               'definition.'.format('_'.join(family)))
