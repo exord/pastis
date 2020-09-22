@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
 
 import pastis
 pastis.initialize()
@@ -10,7 +9,7 @@ from pastis import ObjectBuilder as ob
 import pastis.models as mod
 
 # Append configfiles to searchpath
-sys.path.append('configfiles/')
+sys.path.append('../examples/configfiles/')
 
 # Read import dict
 from example_PIB import input_dict
@@ -40,9 +39,12 @@ while not_passed:
         i+=1
         pass
 
-t = np.linspace(-0.2, 1.2, 1000)
-f = mod.PHOT.PASTIS_PHOT(t, 'Kepler', True, 0.0, 1, 0.0,
+tc = objs[0].object2.planets[0].orbital_parameters.T0
+per = objs[0].object2.planets[0].orbital_parameters.P
+dt = 2.0 / (24.0 * 60.0)
+
+# Sampling array, centred in Tc, width P, sampling; 2 min)
+t = np.arange(tc - per/2, tc + per/2, dt) 
+
+lc = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
                          *objs)
-ax = plt.gca()
-ax.plot(t, f)
-# Next: write results to file

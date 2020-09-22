@@ -60,8 +60,14 @@ while not_passed:
 # t = np.linspace(beb.orbital_parameters.T0 - beb.orbital_parameters.P,
 #                 brb.orbital_parameters.T0 + beb.orbital_parameters.P, 1000)
 
-t = np.linspace(-0.2, 1.2, 1000)
-f = mod.PHOT.PASTIS_PHOT(t, 'Kepler', True, 0.0, 1, 0.0,
+tc = objs[0].object2.orbital_parameters.T0
+per = objs[0].object2.orbital_parameters.P
+dt = 2.0 / (24.0 * 60.0)
+
+# Sampling array, centred in Tc, width P, sampling; 2 min)
+t = np.arange(tc - per/2, tc + per/2, dt) 
+
+lc = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
                          *objs)
 
 ax = plt.gca()

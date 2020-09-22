@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
 
 import pastis
 from pastis.MCMC import priors
@@ -11,7 +10,7 @@ import pastis.models as mod
 sys.path.append('configfiles/')
 
 # Read import dict
-from example_BEBfit import input_dict
+from example_PLA import input_dict
 
 # Get priors from configuration file
 priordict = priors.prior_constructor(input_dict, {})
@@ -45,15 +44,12 @@ while not_passed:
         # Sampling array, centred in Tc, width P, sampling; 2 min)
         t = np.arange(tc - per/2, tc + per/2, dt) 
 
-        f = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
+        lc = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
                                  *objs)
         not_passed = False
+        
     except pastis.exceptions.EBOPparamError:
         print('Light curve could not be computed.\n'
               'Try again ({})'.format(i+1))
         i+=1
-        break
-
-# Dilute binary LC using element in input_dict
-f3 = input_dict['FitBinary1']['foreflux'][0]
-lc = (f/f3 + 1)/(1 + 1/f3)
+        

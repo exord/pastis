@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
 
 import pastis
 pastis.initialize()
@@ -64,9 +63,10 @@ dt = 2.0 / (24.0 * 60.0)
 # Sampling array, centred in Tc, width P, sampling; 2 min)
 t = np.arange(tc - per/2, tc + per/2, dt) 
 
-f = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
+lc = mod.PHOT.PASTIS_PHOT(t, 'Kepler', False, 0.0, 1, 0.0,
                          *[star, beb])
 
-ax = plt.gca()
-ax.plot(t, f)
+
+# ax = plt.gca()
+# ax.plot(t, f)
 # Next: write results to file
