@@ -36,7 +36,7 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
     for beta, nc in zip(betas, chains):
         for c in range(int(round(nc))):
 
-            time.sleep(0.5)
+            # time.sleep(0.5)
             filename = infodict['name'] + '_' + (infodict['comment']).replace(
                 " ", "_")
             f = open(os.path.join(runpath, infodict['name'], filename + '.py'),
@@ -53,8 +53,9 @@ def run_sim(pastisfile, pastisversion, submit=True, profiler=False,
             f.write('from {}.DataTools import readdata'
                     '\n'.format(pastisversion))
             #f.write('from numpy import *\n')
-            f.write('time.sleep(10*' + str(
-                c) + ')\n')  # to avoid file access problems in the cluster
+            
+            # to avoid file access problems in the cluster
+            # f.write('time.sleep(10*' + str(c) + ')\n')  
             
             f.write('PASTISroot = os.getenv(\'PASTISPATH\')\n')
             f.write(
