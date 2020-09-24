@@ -1,3 +1,4 @@
+import os
 import sys
 import numpy as np
 
@@ -6,8 +7,18 @@ from pastis.MCMC import priors
 from pastis import ObjectBuilder as ob
 import pastis.models as mod
 
+import toi_dist as td
+
+# Prepare TOI dist
+home = os.getenv('HOME')
+csvdir = os.path.join(home, 'ExP/pastisML')
+csvfile = 'csv-file-toi-catalog.csv'
+csvfullpath = os.path.join(csvdir, csvfile)
+
+toidist = td.prepare_toi_dist(csvfullpath)
+
 # Append configfiles to searchpath
-sys.path.append('configfiles/')
+sys.path.append('../examples/configfiles/')
 
 # Read import dict
 from example_PLA import input_dict
@@ -26,6 +37,18 @@ while not_passed:
             if isinstance(pd[par], list) and pd[par][1] > 0:
                 pd[par][0] = priordict[obj+'_'+par].rvs()
             
+    # Sample from TOI list
+    lp, ld, ldur = toidist.resample(1)[:, 0]
+    depth = 10**ld * 1e-6 # originally in ppm
+    
+    # Fix period
+    input_dict['FitPlanet1']['P'][0] = 10**lp
+    
+    # kr based on depth (do not consider limb darkening)
+    input_dict['FitPlanet1']['kr'][0] = np.sqrt(depth)
+    
+    # TODO: include duration info    
+
     # Instantiate binary and foreground star
     try:
         objs = ob.ObjectBuilder(input_dict)

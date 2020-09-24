@@ -1,14 +1,25 @@
+import os
 import sys
 import numpy as np
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 import pastis
 from pastis.MCMC import priors
 from pastis import ObjectBuilder as ob
 import pastis.models as mod
 
+import toi_dist as td
+
+# Prepare TOI dist
+home = os.getenv('HOME')
+csvdir = os.path.join(home, 'ExP/pastisML')
+csvfile = 'csv-file-toi-catalog.csv'
+csvfullpath = os.path.join(csvdir, csvfile)
+
+toidist = td.prepare_toi_dist(csvfullpath)
+
 # Append configfiles to searchpath
-sys.path.append('configfiles/')
+sys.path.append('../examples/configfiles')
 
 # Read import dict
 from example_BEBfit import input_dict
@@ -26,6 +37,19 @@ while not_passed:
         for par in pd:
             if isinstance(pd[par], list) and pd[par][1] > 0:
                 pd[par][0] = priordict[obj+'_'+par].rvs()
+
+    # Sample from TOI list
+    lp, ld, ldur = toidist.resample(1)[:, 0]
+    depth = 10**ld * 1e-6 # originally in ppm
+    
+    # Fix period
+    input_dict['FitBinary1']['P'][0] = 10**lp
+    
+    # Foreground flux based on depth
+    kr = input_dict['FitBinary1']['kr'][0]
+    input_dict['FitBinary1']['foreflux'][0] = kr**2/depth
+    
+    ## TODO: include duration info    
             
     # Instantiate binary and foreground star
     try:
@@ -54,6 +78,6 @@ while not_passed:
         i+=1
         break
 
-# Dilute binary LC using element in input_dict
+# Dilute planet LC using element in input_dict
 f3 = input_dict['FitBinary1']['foreflux'][0]
 lc = (f/f3 + 1)/(1 + 1/f3)
