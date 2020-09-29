@@ -107,3 +107,5 @@ for simu_number in range(5): #las n veces
     savetxt(simu_name, lc, delimiter=',')
     # write file
     out_file.write(str(out_file_line)+'\n')
+
+out_file.close()
