@@ -20,7 +20,8 @@ csvfullpath = os.path.join(csvdir, csvfile)
 toidist = td.prepare_toi_dist(csvfullpath)
 
 # Append configfiles to searchpath
-sys.path.append('../examples/configfiles/')
+# sys.path.append('../examples/configfiles/')
+sys.path.append('../../examples/configfiles/')
 
 # Read import dict
 from example_PIB import input_dict
