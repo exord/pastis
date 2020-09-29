@@ -10,22 +10,26 @@ import pastis.models as mod
 
 import toi_dist as td
 
+# >>> CORRER SOLO UNA VEZ
+
 # Prepare TOI dist
 home = os.getenv('HOME')
 csvdir = os.path.join(home, 'ExP/pastisML')
 csvfile = 'csv-file-toi-catalog.csv'
 csvfullpath = os.path.join(csvdir, csvfile)
 
-toidist = td.prepare_toi_dist(csvfullpath)
+toidist = td.TOIdist(csvfullpath)
 
 # Append configfiles to searchpath
-sys.path.append('examples/configfiles/')
+sys.path.append('../examples/configfiles/')
 
 # Read import dict
 from example_BTP import input_dict
 
 # Get priors from configuration file
 priordict = priors.prior_constructor(input_dict, {})
+
+# <<<
 
 not_passed = True
 i = 0
@@ -39,7 +43,7 @@ while not_passed:
                 pd[par][0] = priordict[obj+'_'+par].rvs()
 
     # Sample from TOI list
-    lp, ld, ldur = toidist.resample(1)[:, 0]
+    (lp, ld, ldur), toidict = toidist.sample(1)
     depth = 10**ld * 1e-6 # originally in ppm
     
     # Fix period
