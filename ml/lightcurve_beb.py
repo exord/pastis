@@ -16,6 +16,7 @@ import toi_dist as td
 
 # Prepare TOI dist
 home = os.getenv('HOME')
+#csvdir = os.path.join(home, 'ExP/pastisML')
 csvdir = os.path.join(home, 'rocky/pastis/ml')
 csvfile = 'csv-file-toi-catalog.csv'
 csvfullpath = os.path.join(csvdir, csvfile)
