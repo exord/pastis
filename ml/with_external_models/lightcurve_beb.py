@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 from numpy import savetxt
-import random
 
 
 import pastis
