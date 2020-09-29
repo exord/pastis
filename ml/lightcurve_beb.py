@@ -31,7 +31,7 @@ from example_BEBfit import input_dict
 # Get priors from configuration file
 priordict = priors.prior_constructor(input_dict, {})
 
-out_file = open("beb-index.txt", "w")
+out_file = open("./simulations/beb-index.txt", "w")
 # <<<
 
 
@@ -49,7 +49,6 @@ for simu_number in range(5): #las n veces
             for par in pd:
                 if isinstance(pd[par], list) and pd[par][1] > 0:
                     pd[par][0] = priordict[obj+'_'+par].rvs()
-                    print(par, " ",  pd[par][0])
                     out_file_line.append((par,pd[par][0]))
     
         # Sample from TOI list
@@ -96,7 +95,7 @@ for simu_number in range(5): #las n veces
     f3 = input_dict['FitBinary1']['foreflux'][0]
     lc = (f/f3 + 1)/(1 + 1/f3)
     
-    simu_name = 'beb-simu-'+str(simu_number)+'.csv'
+    simu_name = './simulations/beb-simu-'+str(simu_number)+'.csv'
     out_file_line.append(simu_name)
     
     #  write simulation to csv file
