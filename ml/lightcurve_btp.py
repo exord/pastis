@@ -129,7 +129,7 @@ for simu_number in range(5): #las n veces
     #save simulation and values            
     simu_name = './simulations/btp-simu-'+str(simu_number)+'.csv'   
     savetxt(simu_name, lc, delimiter=',') #as np array
-   
+
     for tuple in out_file_line:
         out_file.write(str(tuple[0]) + " "+ str(tuple[1]) + ",")
     
