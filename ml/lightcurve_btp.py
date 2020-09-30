@@ -11,12 +11,13 @@ from pastis import ObjectBuilder as ob
 import pastis.models as mod
 
 import toi_dist as td
+import tools
 
 # >>> CORRER SOLO UNA VEZ
 
 # Prepare TOI dist
 home = os.getenv('HOME')
-#csvdir = os.path.join(home, 'ExP/pastisML')
+# csvdir = os.path.join(home, 'ExP/pastisML')
 csvdir = os.path.join(home, 'rocky/pastis/ml')
 csvfile = 'csv-file-toi-catalog.csv'
 csvfullpath = os.path.join(csvdir, csvfile)
@@ -52,22 +53,47 @@ for simu_number in range(5): #las n veces
     
         # Sample from TOI list
         (lp, ld, ldur), toidict = toidist.sample(1)
-        depth = 10**ld * 1e-6 # originally in ppm
+        depth = 10**ld[0] * 1e-6 # originally in ppm
         
         # Fix period
-        input_dict['FitPlanet1']['P'][0] = 10**lp
+        input_dict['FitPlanet1']['P'][0] = 10**lp[0]
         
         # Foreground flux based on depth
-        kr = input_dict['FitPlanet1']['kr'][0]
         
-        if kr**2 < depth:
-            print('Cannot dilute depth; already too shallow')
+# =============================================================================
+#         # Option 1; fix foreflux based on kr
+#         kr = input_dict['FitPlanet1']['kr'][0]
+#         
+#         if kr**2 < depth:
+#             print('Cannot dilute depth; already too shallow')
+#             i+=1
+#             continue
+#         
+#         input_dict['FitPlanet1']['foreflux'][0] = kr**2/depth
+#         
+# =============================================================================
+
+        # Option 2; fix kr based on foreflux        
+        foreflux = input_dict['FitPlanet1']['foreflux'][0] 
+        
+        kr2 = foreflux * depth
+        
+        if kr2 > 0.1:
+            print('Unreallistically large kr')
             i+=1
             continue
         
-        input_dict['FitPlanet1']['foreflux'][0] = kr**2/depth
+        input_dict['FitPlanet1']['kr'][0] = np.sqrt(kr2)
         
-        ## TODO: include duration info    
+        # set a/R* based on transit duration
+        ecc = input_dict['FitPlanet1']['ecc'][0]
+        omega_deg = input_dict['FitPlanet1']['omega'][0]                         
+        b = input_dict['FitPlanet1']['b'][0]
+        kr = input_dict['FitPlanet1']['kr'][0]
+                          
+        ar = tools.invert_duration(10**ldur[0], 10**lp[0], ecc, 
+                                   omega_deg, kr, b)
+        input_dict['FitPlanet1']['ar'][0] = ar
                 
         # Instantiate binary and foreground star
         try:

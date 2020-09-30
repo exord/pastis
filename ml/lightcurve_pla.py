@@ -10,12 +10,13 @@ from pastis import ObjectBuilder as ob
 import pastis.models as mod
 
 import toi_dist as td
+import tools
 
 # >>> CORRER SOLO UNA VEZ
 
 # Prepare TOI dist
 home = os.getenv('HOME')
-#csvdir = os.path.join(home, 'ExP/pastisML')
+# csvdir = os.path.join(home, 'ExP/pastisML')
 csvdir = os.path.join(home, 'rocky/pastis/ml')
 csvfile = 'csv-file-toi-catalog.csv'
 csvfullpath = os.path.join(csvdir, csvfile)
@@ -34,7 +35,7 @@ out_file = open("./simulations/pla-index.txt", "w")
 
 # <<<
 
-for simu_number in range(5): #las n veces
+for simu_number in range(1): #las n veces
     
     
     not_passed = True
@@ -56,12 +57,21 @@ for simu_number in range(5): #las n veces
         depth = 10**ld * 1e-6 # originally in ppm
         
         # Fix period
-        input_dict['FitPlanet1']['P'][0] = 10**lp
+        input_dict['FitPlanet1']['P'][0] = 10**lp[0]
         
         # kr based on depth (does not consider limb darkening)
-        input_dict['FitPlanet1']['kr'][0] = np.sqrt(depth)
-        
-        # TODO: include duration info    
+        input_dict['FitPlanet1']['kr'][0] = np.sqrt(depth[0])
+    
+        # set a/R* based on transit duration
+        ecc = input_dict['FitPlanet1']['ecc'][0]
+        omega_deg = input_dict['FitPlanet1']['omega'][0]                         
+        b = input_dict['FitPlanet1']['b'][0]
+        kr = input_dict['FitPlanet1']['kr'][0]
+                          
+        ar = tools.invert_duration(10**ldur[0], 10**lp[0], ecc, 
+                                   omega_deg, kr, b)
+        input_dict['FitPlanet1']['ar'][0] = ar
+
     
         # Instantiate binary and foreground star
         try:
