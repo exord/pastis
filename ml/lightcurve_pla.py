@@ -89,12 +89,16 @@ for simu_number in range(5): #las n veces
             print('Light curve could not be computed.\n'
                   'Try again ({})'.format(i+1))
             i+=1
-            
-        simu_name = './simulations/pla-simu-'+str(simu_number)+'.csv'
-        out_file_line.append(simu_name)
-    
-        #  write simulation to csv file
-        savetxt(simu_name, lc, delimiter=',')
-        # write file
-        out_file.write(str(out_file_line)+'\n')
+
+        #save simulation and values            
+        simu_name = './simulations/pla-simu-'+str(simu_number)+'.csv'   
+        savetxt(simu_name, lc, delimiter=',') #as np array
+       
+        for tuple in out_file_line:
+            out_file.write(str(tuple[0]) + " "+ str(tuple[1]) + ",")
+        
+        out_file.write(simu_name + "\n")
+     
+
+        
 out_file.close()

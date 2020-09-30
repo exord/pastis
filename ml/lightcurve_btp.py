@@ -100,12 +100,14 @@ for simu_number in range(5): #las n veces
     f3 = input_dict['FitPlanet1']['foreflux'][0]
     lc = (f/f3 + 1)/(1 + 1/f3)
     
-    simu_name = './simulations/btp-simu-'+str(simu_number)+'.csv'
-    out_file_line.append(simu_name)
+    #save simulation and values            
+    simu_name = './simulations/btp-simu-'+str(simu_number)+'.csv'   
+    savetxt(simu_name, lc, delimiter=',') #as np array
+   
+    for tuple in out_file_line:
+        out_file.write(str(tuple[0]) + " "+ str(tuple[1]) + ",")
     
-    #  write simulation to csv file
-    savetxt(simu_name, lc, delimiter=',')
-    # write file
-    out_file.write(str(out_file_line)+'\n')
+    out_file.write(simu_name + "\n")
+    
 
 out_file.close()
