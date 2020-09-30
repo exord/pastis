@@ -31,11 +31,12 @@ from example_PLA import input_dict
 
 # Get priors from configuration file
 priordict = priors.prior_constructor(input_dict, {})
+
 out_file = open("./simulations/pla-index.txt", "w")
 
 # <<<
 
-for simu_number in range(1): #las n veces
+for simu_number in range(1000): #las n veces
     
     
     not_passed = True

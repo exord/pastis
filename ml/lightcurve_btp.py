@@ -36,7 +36,7 @@ priordict = priors.prior_constructor(input_dict, {})
 out_file = open("./simulations/btp-index.txt", "w")
 # <<<
 
-for simu_number in range(5): #las n veces
+for simu_number in range(1000): #las n veces
     not_passed = True
     i = 0
     out_file_line=[]
