@@ -141,7 +141,7 @@ def bilinear_interpolation(input_array, indices):
     return output
 
 
-def trueanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8):
+def eccanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8):
 
     E = n.atleast_1d(M)
     Eo = E.copy()
@@ -176,12 +176,23 @@ def trueanomaly(M, ecc, method='Newton', niterationmax=1e4, tol=1e-8):
         if niteration >= niterationmax:
             raise RuntimeError('Eccentric anomaly computation not converged.')
         
-    # Compute true anomaly
-    nu = 2. * n.arctan2(n.sqrt(1. + ecc) * n.sin(E / 2.),
-                        n.sqrt(1. - ecc) * n.cos(E / 2.)
-                        )
-    return nu
+    return E
 
+
+def trueanomaly(ea, ecc):
+    """
+    Compute true anomaly for eccentricity and eccentric anomaly (ea)
+
+    :param np.array ea: eccentric anomaly in radians
+    :param np.array ecc: eccentricity
+    """
+    nu = 2. * n.arctan2(n.sqrt(1. + ecc) * n.sin(ea / 2.),
+                        n.sqrt(1. - ecc) * n.cos(ea / 2.)
+                        )
+
+    return nu
+    
+    
 
 def sigma_clipping(y, k, ey = None, niter = 1, useMAD = False):
     """
