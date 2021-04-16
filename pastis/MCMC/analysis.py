@@ -2111,17 +2111,24 @@ def get_Tp(P, T0, ecc, omega):
 ###
 
 def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
-    ## From http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect008.htm#statug.introbayes.bayesgelm
-
+    """
+    Compute Gelman & Rubin statistics for a multi-chain run.
+    
+    Code copied from 
+    http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect008.htm#statug.introbayes.bayesgelm
+    
+    :return dict Rcs: dictionary of Rc statistic for each parameter.
+    """
     if isinstance(vds[0], dict):
         vdi = vds[0].copy()
     elif isinstance(vds[0], VDchain):
         vdi = vds[0].get_value_dict()
     else:
         print(vds[0].__class__)
-
-    start_index = n.round(BI * len(vdi[vdi.keys()[0]]))
-    end_index = n.round(BO * len(vdi[vdi.keys()[0]]))
+        
+    keys = list(vdi.keys())
+    start_index = n.int(BI * len(vdi[keys[0]]))
+    end_index = n.int(BO * len(vdi[keys[0]]))
 
     Ws = {}
     Bs = {}
@@ -2140,12 +2147,16 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
                 pass
             elif isinstance(vd, VDchain):
                 vd = vd.get_value_dict()
-
-            values.append(vd[kk][start_index: end_index: thinning])
+            
+            try:
+                values.append(vd[kk][start_index: end_index: thinning])
+            except KeyError:
+                print('Parameter {} missing from some chain'.format(kk))
+                continue
 
         values = n.array(values)
-        nn = len(values[0]) # Number of steps
-        m = len(values[:, 0]) # Number of walkers
+        nn = values.shape[1] # Number of steps
+        m = values.shape[0] # Number of walkers
 
         # Compute within-chain variance
         sm2 = n.var(values, axis=1, ddof=1)  # Variance for each chain
@@ -2162,12 +2173,15 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
         MUs[kk] = mu
 
         # Estimate variance by weighted average of B and W (eq.3 Gelman & Rubin)
-        sig = (nn - 1.0) / nn * W + B / nn
+        sig2 = (nn - 1.0) / nn * W + B / nn
 
+        # Rc statistic
+        Rcs[kk] = np.sqrt(sig2/W)
+        
         # The parameter distribution can be approximated by a Student's t
         # distribution (Gelman & Rubin) with scale sqrt(V):
         # print kk, sig, B/(nn*m)
-        V = sig + B / (nn * m)
+        V = sig2 + B / (nn * m)
         Vs[kk] = V
 
         # and degrees of freedom df = 2*V**2/var(V) (see eq. 4 G & R)
@@ -2197,7 +2211,7 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
         print('%s\t%.5e\t%.5e\t%.5e\t%.5e' % (kk, psr, lims[0],
                                               lims[1], lims[2]))
 
-    return
+    return Rcs
 
 
 def geweke(X, first=0.1, last=0.5, Nsamples=20, BI=0):
