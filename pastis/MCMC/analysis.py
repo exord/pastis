@@ -2138,7 +2138,7 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
     PSRF = {}
     Rcs = {}
 
-    for kk in vdi.keys():
+    for j, kk in enumerate(vdi.keys()):
 
         values = []
         for i, vd in enumerate(vds):
@@ -2207,8 +2207,11 @@ def gelmanrubin(vds, BI=0.2, BO=1.0, thinning=1, qs=[0.9, 0.95, 0.99]):
 
         lims = n.sqrt(
             ((nn - 1.) / nn + (m + 1.) / (nn * m) * qq) * df / (df - 2.0))
-
-        print('%s\t%.5e\t%.5e\t%.5e\t%.5e' % (kk, psr, lims[0],
+        
+        if j == 0:
+            print('Parameter\tPSRF\t{:d}%\t{:d}%\t{:d}%'
+                  ''.format(*[int(q*100) for q in qs]))
+        print('%s\t%.3f\t%.3f\t%.3f\t%.3f' % (kk, psr, lims[0],
                                               lims[1], lims[2]))
 
     return Rcs
