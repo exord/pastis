@@ -5,7 +5,7 @@ from math import pi, log10
 from scipy import interpolate
 import scipy.stats as st
 
-import ephem
+# import ephem
 from .. import *
 
 ## Absorption ratio in a given band, relative to visual V (for Rv = 3.1)

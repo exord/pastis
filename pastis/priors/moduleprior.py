@@ -414,19 +414,19 @@ def proba_PLA(mass1, radius1, radius2, period, error_period):
 
     if radius2 >= 6 and radius2 < 22:
         lowmass_period_dist = planet_period_dist['Jupiter']
-        print 'Jupiter'
+        print('Jupiter')
     elif radius2 >= 4 and radius2 < 6:
         lowmass_period_dist = planet_period_dist['LargeNeptune']
-        print 'LargeNeptune'
+        print('LargeNeptune')
     elif radius2 >= 2 and radius2 < 4:
         lowmass_period_dist = planet_period_dist['SmallNeptune']
-        print 'SmallNeptune'
+        print('SmallNeptune')
     elif radius2 >= 1.25 and radius2 < 2:
         lowmass_period_dist = planet_period_dist['SuperEarth']
-        print 'SuperEarth'
+        print('SuperEarth')
     elif radius2 < 1.25:
         lowmass_period_dist = planet_period_dist['Earth']
-        print 'Earth'
+        print('Earth')
     else:
         raise ValueError('Radius of transiting planet too large; has to be smaller than 22 Rearth')
 
@@ -586,20 +586,34 @@ def semi_major_axis(mass1, mass2, period):
     return a/Rsun
 
 def q_def():
-    # Function that gives the ratio mass of a binary system, from Rghavan et al 2010 
+    """
+    Draw random mass ratio from realistic distribution.
+    
+    This function that gives the ratio mass of a binary system based on the 
+    statistics from Rghavan et al 2010 (Fig. 16, left panel).
+    
+    The distribution is modelled using a piece-wise constant distribution.
+    
+    A number is first drawn to choose which part of the distribution the mass 
+    ratio will be drawn from and then a 
+    """
     rand = sp.rand()
     if rand < 0.0454:
+        # Lower end of distribution
         q =  sp.rand()*0.15
     elif rand > 0.882:
+        # Upper end of distribution
         q = ((sp.rand() * 0.05)+0.95)
     else:
+        # Middle part of distribution
         q =  ((sp.rand() * 0.8)+0.15)
     return q
 
 def massradiusrel(M):
     """
-    Computes radius of dwarf star using mass-radius relationship in
-    Allen's Astrophysical Quantities.
+    Compute radius of dwarf star.
+    
+    Use mass-radius relationship in Allen's Astrophysical Quantities.
     """
     if (n.log10(M) > 1.3).any() or (n.log10(M) < -1.0).any():
         #print('Warning! Mass-radius relation not calibrated for this mass range')
