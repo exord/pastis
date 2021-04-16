@@ -59,12 +59,9 @@ def initialize_phot(pbands = Allpbands, ZEROMAGfile = zeromagfile,
         else:
             sys.stdout.write('\b'*12+'%-12s'%pband)
 
-        sys.stdout.flush()
-
+        # sys.stdout.flush()
         Filters[pband] = interpol_filter(ww, FILTERdir, pband)
-        
         NormalisedFilters[pband] = Filters[pband]/tools.area(ww, Filters[pband])
-
 
     print('... DONE! \n')
     return

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from math import pi, log10
 import numpy as n
 
@@ -356,14 +354,11 @@ class Target(Star):
         self.get_stellarparameters()
 
     def get_stellarparameters(self, output=False):
-        """
-        Get parameters from evolution models.
-        """
-
+        """Get parameters from evolution models."""
         # Get Target Star parameters from evolution tracks
         mact, logL, logage = iso.get_stellarparams_target(self.z,
                                                           self.logg,
-                                                          log10(self.teff))
+                                                          n.log10(self.teff))
         self.L = 10 ** logL
         self.logage = logage
         self.mact = mact
