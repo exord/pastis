@@ -248,7 +248,7 @@ def make_star(objname, dd, imposeobj = None):
     return star
 
 
-def ObjectBuilder(dictionary) :
+def ObjectBuilder(dictionary, return_compund=False) :
     """
     Construct objects from scenario dictionary.
     """
@@ -406,4 +406,8 @@ def ObjectBuilder(dictionary) :
         for remain in n.array(list(inputdict.keys()))[ind == -1]:
             inputdict.pop(remain)
 
-    return list(objects.values())
+    if return_compund:
+        # Make compound and return
+    else:
+        # Legacy mode, return list of components.
+        return list(objects.values())

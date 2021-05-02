@@ -39,7 +39,7 @@ quiet = True
 
 class Star(object):
     """
-    Star
+    Star.
 
     age: log10(Age [yr])
     z: Metallicity ([M/H] = log(Z/Zsun); abundance of metals with respect to H;
@@ -1756,6 +1756,22 @@ class FitPlanet(FitBinary):
         # By default, set self.q to zero
         self.q = kwargs.pop('q', 0.0)
 
+
+class CompundObject(object):
+    """
+    Class for compound objects (e.g. BEB).
+    
+    This is a convenience class to produce light curves and models.
+    """
+    def __init__(self, components):
+        """
+        Initialise compound object.
+        
+        :param list or tuple components: components of compound object
+        """
+        self.components = components
+        
+    def get_LC()
 
 class orbital_parameters(object):
     """
