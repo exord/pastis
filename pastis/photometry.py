@@ -21,7 +21,7 @@ Allpbands = ['CoRoT-W', 'Kepler', 'IRAC-I1', 'IRAC-I2', 'IRAC-I3', 'IRAC-I4',
              '2MASS-H', '2MASS-Ks', 'STROMGREN-u', 'STROMGREN-v', 'STROMGREN-b',
              'STROMGREN-y', 'WISE-W1', 'WISE-W2', 'WISE-W3', 'WISE-W4',
              'Bessell-U', 'Bessell-B', 'Bessell-V', 'Bessell-R', 'Bessell-I',
-             'MIPS-M1', 'Cousins-R', 'Cousins-I']
+             'MIPS-M1', 'Cousins-R', 'Cousins-I', 'TESS']
 
 #, 'MIPS-M2', 'MIPS-M3'
 
