@@ -45,7 +45,7 @@ def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
                       'Johnson-I' : 'I', '2MASS-J' : 'J', '2MASS-H' : 'H',
                       '2MASS-Ks' : 'K', 'STROMGREN-u' : 'u',
                       'STROMGREN-v' : 'v', 'STROMGREN-b' : 'b',
-                      'STROMGREN-y' : 'y'}
+                      'STROMGREN-y' : 'y', 'TESS': 'T'}
 
     # Read data from file
     f = open(LDCfile, 'r')

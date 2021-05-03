@@ -12,7 +12,8 @@ import os
 from .paths import ldpath, setpath, priorspath
 
 # Dictionaries
-LDdict = {'Claret2011': os.path.join(ldpath, 'claret2011ab.txt')}
+LDdict = {'Claret2011': os.path.join(ldpath, 'claret2011ab.txt'),
+          'Claret2011_wTESS': os.path.join(ldparh, 'claret211abTESS.txt')}
 
 EMdict = {'Dartmouth': os.path.join(setpath, 'Dartmouth.trk'),
           'Geneva': os.path.join(setpath, 'Geneva.trk'),

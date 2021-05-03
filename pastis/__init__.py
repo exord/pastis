@@ -4,10 +4,10 @@ import numpy as n
 from .paths import libpath, filterpath, zeromagfile
 from .extlib import EMdict
 from . import photometry
-from . import limbdarkening
-from . import extinction
-from . import velocimetry
-from . import isochrones
+from . import limbdarkening as ld
+from . import extinction as ext
+from . import velocimetry as vel
+from . import isochrones as iso
 
 from .extlib import SAMdict, LDdict
 
@@ -122,10 +122,7 @@ checkblendmag = False
 # Function to initialize PASTIS
 ###
 def initialize(*args):
-    """
-    Function to initialise PASTIS
-    """
-    
+    """Initialise PASTIS."""
     global inputdicts
     global beaming, Nmax, TrefRV, spotmodel, checkblendmag
 
@@ -138,13 +135,13 @@ def initialize(*args):
                                    AMmodel=SAMdict['BT-settl'])
         #photometry.initialize_phot_WD()
 
-        isochrones.interpol_tracks(EMdict['Dartmouth'])
-        isochrones.prepare_tracks_target(EMdict['Dartmouth'])
+        iso.interpol_tracks(EMdict['Dartmouth'])
+        iso.prepare_tracks_target(EMdict['Dartmouth'])
         #isochrones.interpol_WD(os.path.join(libpath, 'AM', 'WD', 'Table_DA'))
 
-        limbdarkening.initialize_limbdarkening(pbands_limbdarkening,
-                                               ATMmodel='A',
-                                               LDCfile=LDdict['Claret2011'])
+        ld.initialize_limbdarkening(pbands_limbdarkening,
+                                    ATMmodel='A',
+                                    LDCfile=LDdict['Claret2011_wTESS'])
 
         inputdicts = [{}, {}, {}]
 
@@ -258,10 +255,10 @@ def initialize(*args):
             contains_rv = True
     
     if contains_rv:
-        velocimetry.initialize_RV(datadict)
+        vel.initialize_RV(datadict)
 
     if contains_wd:
-        isochrones.interpol_WD(os.path.join(libpath, 'AM', 'WD', 'Table_DA'))
+        iso.interpol_WD(os.path.join(libpath, 'AM', 'WD', 'Table_DA'))
         photometry.initialize_phot_WD()
 
     try:
@@ -282,9 +279,9 @@ def initialize(*args):
             ## Dartmouth
             ###
             if contains_blend:
-                isochrones.interpol_tracks(EMdict['Dartmouth'])
+                iso.interpol_tracks(EMdict['Dartmouth'])
             if contains_target:
-                isochrones.prepare_tracks_target(EMdict['Dartmouth'])
+                iso.prepare_tracks_target(EMdict['Dartmouth'])
 
         elif infodict['EvolModel'] == 'Geneva':
 
@@ -293,9 +290,9 @@ def initialize(*args):
             ## Geneva
             ###
             if contains_blend:
-                isochrones.interpol_tracks(EMdict['Geneva'])
+                iso.interpol_tracks(EMdict['Geneva'])
             if contains_target:
-                isochrones.prepare_tracks_target(EMdict['Geneva'])
+                iso.prepare_tracks_target(EMdict['Geneva'])
 
         elif infodict['EvolModel'] == 'StarEvol':
 
@@ -304,9 +301,9 @@ def initialize(*args):
             ## StarEvol
             ###
             if contains_blend:
-                isochrones.interpol_tracks(EMdict['StarEvol'])
+                iso.interpol_tracks(EMdict['StarEvol'])
             if contains_target:
-                isochrones.prepare_tracks_target(EMdict['StarEvol'])
+                iso.prepare_tracks_target(EMdict['StarEvol'])
 
         elif infodict['EvolModel'] == 'Parsec':
 
@@ -315,9 +312,9 @@ def initialize(*args):
             ## StarEvol
             ###
             if contains_blend:
-                isochrones.interpol_tracks(EMdict['Parsec'])
+                iso.interpol_tracks(EMdict['Parsec'])
             if contains_target:
-                isochrones.prepare_tracks_target(EMdict['Parsec'])
+                iso.prepare_tracks_target(EMdict['Parsec'])
 
         else:
             print('Evolution model not recongnized.')
@@ -329,8 +326,8 @@ def initialize(*args):
     
     ra = infodict['alpha']
     dec = infodict['delta']
-    extinction.initialize_extinction(ra, dec, infodict['MaxDist'],
-                                     infodict['EXTstep'], Rv=3.1)
+    ext.initialize_extinction(ra, dec, infodict['MaxDist'],
+                              infodict['EXTstep'], Rv=3.1)
 
     if len(pbands_limbdarkening) > 0:
 
@@ -342,8 +339,8 @@ def initialize(*args):
         else:
             raise NameError('Atmospheric model not recognized.')
 
-        limbdarkening.initialize_limbdarkening(pbands_limbdarkening,
-                                               ATMmodel=atmmodel,
-                                               LDCfile=LDdict[infodict['LDC']])
+        ld.initialize_limbdarkening(pbands_limbdarkening,
+                                    ATMmodel=atmmodel,
+                                    LDCfile=LDdict[infodict['LDC']])
     
     return
