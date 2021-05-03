@@ -9,7 +9,7 @@ from . import photometry as phot
 
 def initialize_limbdarkening(pbands,
                              ATMmodel = 'A',
-                             LDCfile = LDdict['Claret2011']):
+                             LDCfile = LDdict['Claret2011_wTESS']):
 
     print('Loading LimbDarkening coefficients...')
 
