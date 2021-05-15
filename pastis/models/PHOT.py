@@ -1,4 +1,11 @@
-# 2012-03-20: implemented CoRoT colors.
+"""
+Model with photometric model for PASTIS.
+
+Model the lightcurve of a system (list of objects) using JKTEBOP as main
+model and ancillary models for limb darkening coefficients, if necessary.
+
+2012-03-20: add support for CoRoT colors.
+"""
 import sys
 import numpy as n
 # import pymacula
@@ -15,9 +22,7 @@ from ..exceptions import EBOPparamError
 
 
 def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
-    """
-    Compute SED for all objects in args, for all photbands.
-    """
+    """Compute LC for all objects in args, for all photbands."""
     from .. import AstroClasses as ac
 
     fluxes = []
@@ -102,10 +107,7 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
 
 
 def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
-    """
-    Runs JKTEBOP with variables v
-    x in phase
-    """
+    """Run JKTEBOP with variables v and x in phase."""
     print_warning = False
     # Check limits of input parameters
     if v[1-1] > 100.0:
@@ -242,7 +244,7 @@ def run_EBOP(v, ldtype, x, Nx, Nmax=None, components=False):
 
 
 def call_task2(v, ldtype, Npoints, time, components=False):
-
+    """Call task 2 from JKTEBOP."""
     # Define output arrays
     outflux = n.zeros(Npoints)
     LP = n.zeros(Npoints)
@@ -261,7 +263,8 @@ def call_task2(v, ldtype, Npoints, time, components=False):
 
 def macula(t, star, spots, inst):
     """
-    Compute spots model using macula
+    Compute spots model using macula.
+    
     https://www.cfa.harvard.edu/~dkipping/macula.html
 
     ! Istar 	= Theta_star(1)		! Inclination of the star [rads]

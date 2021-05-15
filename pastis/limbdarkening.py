@@ -26,8 +26,10 @@ def initialize_limbdarkening(pbands,
 
 def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
     """
-    Read limb darkenning file, interpolate over
-    log(g), Teff, and metallicity (z).
+    Interpolate limb darkening tables.
+    
+    Read limb darkenning file, interpolate over log(g), Teff, 
+    and metallicity (z).
 
     If a combination of log(g), Teff, and z is not in the tables but within its
     limits, return the closest value in the exisiting table.
@@ -35,7 +37,6 @@ def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
     Model: A or P for Atlas (Castelli Kurucz) or Phoenix (BT-Settl)
     Return interpolated function that returns an array with quadratic LDC for a given photmetric bandpass.
     """
-
     # Define dictionary that translates photbands to Claret notation
     trad_to_claret = {'CoRoT-W' : 'C', 'Kepler' : 'Kp', 'IRAC-I1' : 'S1',
                       'IRAC-I2' : 'S2', 'IRAC-I3' : 'S3', 'IRAC-I4' : 'S4',
@@ -172,6 +173,7 @@ def interpol_LD(LDCfile, photbands = ['Kepler', 'CoRoT'], ATMmodel = 'A'):
 
         LDCs[photband] = [a_interp, b_interp]
     return LDCs
+
 
 def get_LD(teff, logg, z, photband, verbose = False):
 
