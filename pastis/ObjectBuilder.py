@@ -1,9 +1,14 @@
 #!/usr/bin/env python
+"""
+Module with functions to build objects from dictionary of parameters.
 
-'''
+The main function, ObjectBuilder, recursively explores the input dictionary,
+constructs the individual instances of the classes it requires, and then
+puts them together in systems as required.
+
 05-04-2012: free extinction included in the star call
+"""
 
-'''
 from . import TypeList
 from .photometry import Allpbands
 from . import AstroClasses as ac
@@ -54,7 +59,6 @@ def make_triple_component(objname, configdict, imposeobj=None):
         pass
     """
     return component
-
 
 
 def make_binary(objname, dd, imposeobj = None):
@@ -249,9 +253,7 @@ def make_star(objname, dd, imposeobj = None):
 
 
 def ObjectBuilder(dictionary) :
-    """
-    Construct objects from scenario dictionary.
-    """
+    """Construct objects from scenario dictionary."""
     import numpy as n
     objects = {}
 
@@ -263,7 +265,7 @@ def ObjectBuilder(dictionary) :
     ###
     toconstruct = inputdict.keys()
 
-    ## Build all objects
+    # Build all objects
     while len(inputdict.keys()) > 0:
         
         ## Start construction of Triples
