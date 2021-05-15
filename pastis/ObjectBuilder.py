@@ -63,8 +63,8 @@ def make_triple_component(objname, configdict, imposeobj=None):
 
 def make_binary(objname, dd, imposeobj = None):
 
-    ## If no orbital parameters are
-    ## specified, construct them from input dictionary.
+    # If no orbital parameters are given, construct them from input 
+    # dictionary.
     if not 'orbital_parameters' in dd.keys():
         ddop = {}
         for key in dd.keys():
@@ -152,7 +152,7 @@ def make_binary(objname, dd, imposeobj = None):
 
 def make_plansys(objname, dd, imposeobj = None):
 
-    ## Make central star
+    # Make central star
     dd1 = {}
 
     # Get name of central star in planetary system
@@ -166,7 +166,8 @@ def make_plansys(objname, dd, imposeobj = None):
                              inputdict[starname][key][photband][0]) for
                             photband in inputdict[starname][key])
         
-    ## If impositions are to be made (e.g. if plansys belongs to a triple system)
+    # Impose conditions as necessary
+    # (e.g. if plansys belongs to a triple system)
     if imposeobj != None:
         dd1['logage'] = imposeobj.logage
         dd1['z'] = imposeobj.z
@@ -182,7 +183,6 @@ def make_plansys(objname, dd, imposeobj = None):
         inputdict.pop(starname)
     except NameError:
         pass
-
 
     # Construct planet instances
     planets = []
