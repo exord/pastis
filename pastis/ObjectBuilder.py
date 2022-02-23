@@ -121,7 +121,7 @@ def make_binary(objname, dd, imposeobj = None):
                 ddbin[key] = inputdict[objname][key][0]
             ddbin['orbital_parameters'] = orbit
 
-            binary = ac.qBinary(primary = star1, **ddbin)
+            binary = ac.qBinary(primary=star1, **ddbin)
 
         elif 'IsoBinary' in objname:
             ## Construct secondary imposing primary age, z, dist, v0, and E(B-V)
