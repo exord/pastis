@@ -32,7 +32,10 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
             # Get flux from star
             flux = phot.get_flux(obj.get_spectrum(), photband)
             lc_ = obj.get_spots(t, photband)
-
+            
+            fluxes.append(flux)
+            lightcurves.append(lc_)
+            
         elif isinstance(obj, ac.IsoBinary):
             # Add spectrum of each component, and compute flux
             spectrum = obj.star1.get_spectrum() + obj.star2.get_spectrum()
@@ -41,13 +44,19 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
             # Get lightcurve from binary
             lc_ = obj.get_LC(t, photband, isphase, dt0)
 
+            fluxes.append(flux)
+            lightcurves.append(lc_)
+            
         elif isinstance(obj, ac.PlanSys):
             # Get flux from star
             flux = phot.get_flux(obj.star.get_spectrum(), photband)
 
             # Get lightcurve from planetary system
             lc_ = obj.get_LC(t, photband, isphase, dt0)
-
+            
+            fluxes.append(flux)
+            lightcurves.append(lc_)
+            
         elif isinstance(obj, ac.FitBinary):
             # Get flux from star
             flux = 1.
@@ -55,13 +64,16 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
             # Get lightcurve from planetary system
             lc_ = obj.get_LC(t, photband, isphase, dt0)
 
+            fluxes.append(flux)
+            lightcurves.append(lc_)
+            
         elif isinstance(obj, ac.Triple):
             # Get LC for each component of triple system
             for component in (obj.object1, obj.object2):
                 if isinstance(component, ac.Star):
                     flux = phot.get_flux(component.get_spectrum(), photband)
                     lc_ = n.ones(len(t))  # TEMPORAL, implement spots
-
+                    
                 elif isinstance(component, ac.IsoBinary):
                     # Add spectrum of each component, and compute flux
                     spectrum = component.star1.get_spectrum() + \
@@ -80,16 +92,18 @@ def PASTIS_PHOT(t, photband, isphase, cont, foot, dt0, *args):
                     # Get lightcurve from planetary system
                     lc_ = component.get_LC(t, photband, isphase, dt0)
                     
+                fluxes.append(flux)
+                lightcurves.append(lc_)
         
-        # Check if no NaN or zero exits
-        # Check if things will work
-        assert flux > 0, "Null flux for object {}".format(obj)
-        assert n.all(~n.isnan(lc_)), \
-            ('{} elements (out of {}) in LC of {} ' 
-            'are NaN'.format(n.sum(n.isnan(lc_)), len(lc_), obj))
-            
-        fluxes.append(flux)
-        lightcurves.append(lc_)
+# =============================================================================
+#         # Check if no NaN or zero exits
+#         # Check if things will work
+#         assert flux > 0, "Null flux for object {}".format(obj)
+#         assert n.all(~n.isnan(lc_)), \
+#             ('{} elements (out of {}) in LC of {} ' 
+#             'are NaN'.format(n.sum(n.isnan(lc_)), len(lc_), obj))
+#             
+# =============================================================================
 
     # Produce contaminating lightcurve and flux
     F = n.sum(fluxes)
