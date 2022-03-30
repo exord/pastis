@@ -49,3 +49,45 @@ icc -O2 -fPIC -shared fitgauss_c.cpp -o fitgauss_c.so
 ```
 
 If you do not have the (much faster propietary) ``icc`` compiler, you can use ``g++``.
+
+# Reference
+
+If you use this code in a publication, please cite our papers:
+
+```
+@ARTICLE{2014MNRAS.441..983D,
+       author = {{D{\'\i}az}, R.~F. and {Almenara}, J.~M. and {Santerne}, A. and {Moutou}, C. and {Lethuillier}, A. and {Deleuil}, M.},
+        title = "{PASTIS: Bayesian extrasolar planet validation - I. General framework, models, and performance}",
+      journal = {\mnras},
+     keywords = {methods: statistical, techniques: photometric, techniques: radial velocities, planetary systems, Astrophysics - Earth and Planetary Astrophysics},
+         year = 2014,
+        month = jun,
+       volume = {441},
+       number = {2},
+        pages = {983-1004},
+          doi = {10.1093/mnras/stu601},
+archivePrefix = {arXiv},
+       eprint = {1403.6725},
+ primaryClass = {astro-ph.EP},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2014MNRAS.441..983D},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@ARTICLE{2015MNRAS.451.2337S,
+       author = {{Santerne}, A. and {D{\'\i}az}, R.~F. and {Almenara}, J. -M. and {Bouchy}, F. and {Deleuil}, M. and {Figueira}, P. and {H{\'e}brard}, G. and {Moutou}, C. and {Rodionov}, S. and {Santos}, N.~C.},
+        title = "{PASTIS: Bayesian extrasolar planet validation - II. Constraining exoplanet blend scenarios using spectroscopic diagnoses}",
+      journal = {\mnras},
+     keywords = {methods: data analysis, techniques: radial velocities, techniques: spectroscopic, binaries: spectroscopic, planetary systems, Astrophysics - Earth and Planetary Astrophysics, Astrophysics - Instrumentation and Methods for Astrophysics, Astrophysics - Solar and Stellar Astrophysics},
+         year = 2015,
+        month = aug,
+       volume = {451},
+       number = {3},
+        pages = {2337-2351},
+          doi = {10.1093/mnras/stv1080},
+archivePrefix = {arXiv},
+       eprint = {1505.02663},
+ primaryClass = {astro-ph.EP},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2337S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
