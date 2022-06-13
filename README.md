@@ -10,7 +10,7 @@
 ### External models
 External models are used for the stellar atmospheres, evolution tracks, limb darkening parameters, and interstellar extinction. Besides, a library of photmetric filters are necessary to run PASTIS. All these files are provided as part of the repository in the external_models folder.
 
-**Update** The zipped external models can be found in this [Google Drive](https://drive.google.com/file/d/1h8NLATVtib9lhFMe7H1hMzYcrRSqvq0R/view?usp=sharing).
+**Update** The zipped external models can be found in this [Google Drive](https://drive.google.com/file/d/1oWDlJ45MMGxpTGAqsNxvdBGtnZnjOHiq/view?usp=sharing).
 
 To unpack the library, use ``tar``
 ```
